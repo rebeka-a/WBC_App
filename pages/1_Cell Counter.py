@@ -3,11 +3,23 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime
+from utils.data_manager import DataManager
 
 # Titel der App
 st.set_page_config(page_title="Blood Cell Data & Reference Values", layout="wide")
 
 st.title("📋 Gesammelte Zellzählungen")
+
+# Initialisierung von 'data_df', falls nicht vorhanden
+if 'data_df' not in st.session_state:
+    st.session_state['data_df'] = pd.DataFrame()  # Leeres DataFrame als Standardwert
+
+# Sortieren der Daten
+if not st.session_state['data_df'].empty:
+    data_df = st.session_state['data_df'].sort_values(by='timestamp', ascending=False)
+    st.dataframe(data_df)
+else:
+    st.info("Keine Daten vorhanden. Bitte Ergebnisse speichern, um sie hier anzuzeigen.")
 
 # Patientendaten erfassen (nicht in der Sidebar)
 st.subheader("🧑‍⚕️ Patientendaten")
@@ -30,13 +42,13 @@ def get_reference_values(age, gender):
     if age == "Nicht angegeben":
         return ["Neutrophile", "Basophile", "Eosinophile", "Monozyten", "Vorstufen"]
     elif age < 1:
-        return ["Neutrophile", "Basophile", "Eosinophile", "Monozyten", "Vorstufen"]
+        return ["Neutrophile", "Basophile", "Eosinophile", "Monozyten"]
     elif age < 5:
-        return ["Neutrophile", "Basophile", "Eosinophile", "Monozyten", "Vorstufen"]
+        return ["Neutrophile", "Eosinophile", "Monozyten"]
     elif age < 12:
-        return ["Neutrophile", "Basophile", "Eosinophile", "Monozyten", "Vorstufen"]
+        return ["Neutrophile", "Basophile", "Monozyten"]
     elif age < 18:
-        return ["Neutrophile", "Basophile", "Eosinophile", "Monozyten", "Vorstufen"]
+        return ["Neutrophile", "Eosinophile"]
     else:
         return ["Neutrophile", "Basophile", "Eosinophile", "Monozyten", "Vorstufen"]
 
@@ -59,8 +71,28 @@ cols = st.columns(len(wbc_types))
 for i, cell in enumerate(wbc_types):
     with cols[i]:
         if st.button(f"{cell}\n({st.session_state['counts'][cell]})", key=f"btn_{cell}"):
-            increase_count(cell)
-            st.rerun()
+            st.session_state['counts'][cell] += 1
+
+# Fehlerbehandlung beim Speichern
+if st.button("Ergebnisse speichern"):
+    # Initialisierung und Registrierung von 'data_df', falls nicht vorhanden
+    if 'data_df' not in st.session_state:
+        st.session_state['data_df'] = pd.DataFrame()  # Leeres DataFrame als Standardwert
+        DataManager().register_data(session_state_key='data_df', data=st.session_state['data_df'])
+
+    result = {
+        "gender": st.session_state["gender"],
+        "birth_date": st.session_state["birth_date"],
+        "age": age,
+        "counts": st.session_state['counts'],
+        "timestamp": datetime.datetime.now()  # Aktueller Zeitstempel
+    }
+    try:
+        DataManager().append_record(session_state_key='data_df', record_dict=result)
+        st.success("Ergebnisse wurden erfolgreich gespeichert!")
+        st.write("Gespeicherte Ergebnisse:", result)
+    except Exception as e:
+        st.error(f"Fehler beim Speichern der Ergebnisse: {e}")
 
 st.markdown("---")
 
