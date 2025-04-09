@@ -10,9 +10,9 @@ st.set_page_config(page_title="Blood Cell Data & Reference Values", layout="wide
 
 st.title("📋 Gesammelte Zellzählungen")
 
-# Initialisierung von 'data_df', falls nicht vorhanden
 if 'data_df' not in st.session_state:
     st.session_state['data_df'] = pd.DataFrame()  # Leeres DataFrame als Standardwert
+
 
 # Sortieren der Daten
 if not st.session_state['data_df'].empty:
@@ -55,9 +55,7 @@ def get_reference_values(age, gender):
 wbc_types = get_reference_values(age, gender)
 button_colors = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd"]
 
-# Initialisierung der Session-State-Werte, falls nicht vorhanden
-if 'counts' not in st.session_state:
-    st.session_state['counts'] = {cell: 0 for cell in wbc_types}
+
 
 # Funktion zum Erhöhen der Zellzahlen
 def increase_count(cell_type):
@@ -73,26 +71,8 @@ for i, cell in enumerate(wbc_types):
         if st.button(f"{cell}\n({st.session_state['counts'][cell]})", key=f"btn_{cell}"):
             st.session_state['counts'][cell] += 1
 
-# Fehlerbehandlung beim Speichern
-if st.button("Ergebnisse speichern"):
-    # Initialisierung und Registrierung von 'data_df', falls nicht vorhanden
-    if 'data_df' not in st.session_state:
-        st.session_state['data_df'] = pd.DataFrame()  # Leeres DataFrame als Standardwert
-        DataManager().register_data(session_state_key='data_df', data=st.session_state['data_df'])
 
-    result = {
-        "gender": st.session_state["gender"],
-        "birth_date": st.session_state["birth_date"],
-        "age": age,
-        "counts": st.session_state['counts'],
-        "timestamp": datetime.datetime.now()  # Aktueller Zeitstempel
-    }
-    try:
-        DataManager().append_record(session_state_key='data_df', record_dict=result)
-        st.success("Ergebnisse wurden erfolgreich gespeichert!")
-        st.write("Gespeicherte Ergebnisse:", result)
-    except Exception as e:
-        st.error(f"Fehler beim Speichern der Ergebnisse: {e}")
+
 
 st.markdown("---")
 

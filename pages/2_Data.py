@@ -1,12 +1,20 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
 import datetime
+from utils.data_manager import DataManager
+
 
 # Titel der App
 st.set_page_config(page_title="Blood Cell Data & Reference Values", layout="wide")
 
 st.title("📋 Gesammelte Zellzählungen & Referenzwerte")
 st.markdown("Hier findest du die gesammelten Zellzählungen sowie die Referenzwerte für Blutzellen.")
+
+if 'data_df' not in st.session_state:
+    st.session_state['data_df'] = pd.DataFrame()  # Leeres DataFrame als Standardwert
+
 
 # Abrufen der Patientendaten aus Session-State, falls vorhanden
 gender = st.session_state.get("gender", "Nicht angegeben")
@@ -126,9 +134,21 @@ st.dataframe(data_df.style.applymap(lambda val: "color: red; font-weight: bold;"
 
 st.markdown("---")
 
-# Möglichkeit, die Daten als CSV herunterzuladen
-def save_to_csv():
-    data_df.to_csv("blood_cell_counts.csv", index=False)
-    st.success("✅ Daten erfolgreich gespeichert!")
 
-st.button("💾 Speichern als CSV", on_click=save_to_csv)
+
+if st.button("Ergebnisse speichern"):
+    # Initialisierung und Registrierung von 'data_df', falls nicht vorhanden
+    
+    result = {
+        "gender": st.session_state["gender"],
+        "birth_date": st.session_state["birth_date"],
+        "age": age,
+        "counts": st.session_state['counts'],
+        "timestamp": datetime.datetime.now()  # Aktueller Zeitstempel
+    }
+    try:
+        DataManager().append_record(session_state_key='data_df', record_dict=result)
+        st.success("Ergebnisse wurden erfolgreich gespeichert!")
+        st.write("Gespeicherte Ergebnisse:", result)
+    except Exception as e:
+        st.error(f"Fehler beim Speichern der Ergebnisse: {e}")
