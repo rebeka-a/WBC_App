@@ -1,0 +1,6 @@
+# Produkt Roadmap
+V0.1 Basic Struktur + Konzept
+V1.0 MVP
+V2.0 Cell counter optimieren (WBC + RBC) + Details zum WBC + RBC
+V3.0 Daten in Switch Drive speichern
+V4.0 App im Cloud + Login
