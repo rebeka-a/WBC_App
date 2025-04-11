@@ -1,6 +1,6 @@
 # Nutzertest mit Wireframe
 
-## Blod cell counter App
+## Blod Cell Counter App
 
 ### Hypothese 
 #### Was wissen wir?
