@@ -1,9 +1,12 @@
 # WBC App
-Diese App wurde Kreiert von: 
+Diese App wurde kreiert von: 
 - Rebeka Ammann: ammanre1@students.zhaw.ch
 - Gaia Capoferri: capofgai@students.zhaw.ch
 - Marisa von Fellenberg: vonfemar@students.zhaw.ch
 
 ### Funktionen
-Die App soll es erleichter im Hämatologie Praktikum Blutbilder differenzieren zu können. Uns ist es wichtig Zellen schnell und einfach einordnen zu können und eine Gesammtanalyse des Blutbildes machen zu könne. Für den Lernefekt soll die App die Daten speichern und man kann seine Analysen und Vermutungen dazu schreiben. So kann man jeder Zeit die Daten wieder abrufen und repetieren. 
-Dies mache es möglich im Unterricht gut vorran zu kommen und auch wenn die Auswertung manchaml etwas stressig ist, kann mann sie im nachhinein nochmals anschauen und analysieren.
+Die App richtet sich an Studierende und Fachleute im Bereich der Labordiagnostik und soll die Differenzierung von Blutbildern im Hämatologiepraktikum und -berufsalltag erleichtern. Im Mittelpunkt steht eine intuitive und effiziente Möglichkeit, Blutzellen schnell zu erkennen, zuzuordnen und eine Gesamtanalyse des Blutbildes durchzuführen.
+
+Besonderer Wert wird auf den Lerneffekt gelegt: Alle analysierten Daten werden gespeichert, sodass Nutzerinnen und Nutzer ihre Einschätzungen und Kommentare dokumentieren und bei Bedarf erneut aufrufen können. Dies unterstützt ein nachhaltiges Lernen und ermöglicht es, den individuellen Fortschritt gezielt nachzuvollziehen.
+
+Die App bietet somit nicht nur während der praktischen Auswertung im Unterricht oder Labor eine hilfreiche Unterstützung – insbesondere bei Zeitdruck –, sondern auch im Nachhinein die Möglichkeit, Analysen nochmals in Ruhe durchzugehen und zu reflektieren. Dadurch wird der Lernprozess gestärkt und eine kontinuierliche Verbesserung in der hämatologischen Diagnostik gefördert.
