@@ -4,7 +4,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 import datetime
 from utils.data_manager import DataManager
+from utils.login_manager import LoginManager
 
+LoginManager().go_to_login('Start.py') 
+
+# Initialisiere DataManager
+data_manager = DataManager()
+
+if "data_df" not in st.session_state:
+    data_manager.load_app_data(session_state_key="data_df", file_name="data.csv", initial_value=[])
 
 # Titel der App
 st.set_page_config(page_title="Blood Cell Data & Reference Values", layout="wide")
@@ -147,7 +155,7 @@ if st.button("Ergebnisse speichern"):
         "timestamp": datetime.datetime.now()  # Aktueller Zeitstempel
     }
     try:
-        DataManager().append_record(session_state_key='data_df', record_dict=result)
+        data_manager.append_record(session_state_key='data_df', record_dict=result)
         st.success("Ergebnisse wurden erfolgreich gespeichert!")
         st.write("Gespeicherte Ergebnisse:", result)
     except Exception as e:
