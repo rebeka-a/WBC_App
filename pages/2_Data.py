@@ -14,9 +14,6 @@ data_manager = DataManager()
 if "data_df" not in st.session_state:
     data_manager.load_app_data(session_state_key="data_df", file_name="data.csv", initial_value=[])
 
-# Titel der App
-st.set_page_config(page_title="Blood Cell Data & Reference Values", layout="wide")
-
 st.title("📋 Gesammelte Zellzählungen & Referenzwerte")
 st.markdown("Hier findest du die gesammelten Zellzählungen sowie die Referenzwerte für Blutzellen.")
 
