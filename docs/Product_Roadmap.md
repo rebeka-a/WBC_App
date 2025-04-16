@@ -1,6 +1,6 @@
-#Product Roadmap
+# Product Roadmap
 
-V0.1 Basic Struktur + Konzept
+## V0.1 Basic Struktur + Konzept
 -	Basic cell counter (nur Zellzahl erhöhen möglich)
 -	Diagramm für Zellverteilung
 -	Wireframe
@@ -8,11 +8,11 @@ V0.1 Basic Struktur + Konzept
 -	Persona
 -	Wireframe Nutzertest
 
-V1.0 MVP + App im Cloud
+## V1.0 MVP + App im Cloud
 -	Cell Counter, Diagramm und Analysetabelle müssen richtig funktionieren 
 -	App in Streamlit Community Cloud veröffentlichen 
 
-V2.0 Cell counter optimieren + Details
+## V2.0 Cell counter optimieren + Details
 -	Möglichkeit, mehrere Zelltypen zu zählen
 -	Möglichkeit, Zellzahl zu erhöhen oder zu reduzieren 
 -	Neue Unterseite, um RB zu analysieren 
@@ -20,6 +20,6 @@ V2.0 Cell counter optimieren + Details
 -	Buttons, um die verschiedenen Unterseiten zu verknüpfen 
 -	Unterseite für Analyse (alle Resultate eines Blutbildes auf einer Seite)
 
-V3.0 Daten in Switch Drive speichern + Login
+## V3.0 Daten in Switch Drive speichern + Login
 -	Daten werden erfolgreich im Switch Drive gespeichert
 -	neue Benutzer können sich registrieren und dann einloggen
