@@ -8,9 +8,11 @@
 -	Persona
 -	Wireframe Nutzertest
 
-## V1.0 MVP + App im Cloud
+## V1.0 MVP + App im Cloud + Daten in Switch Drive + Login
 -	Cell Counter, Diagramm und Analysetabelle müssen richtig funktionieren 
 -	App in Streamlit Community Cloud veröffentlichen 
+-	Daten werden erfolgreich im Switch Drive gespeichert
+-	neue Benutzer können sich registrieren und dann einloggen
 
 ## V2.0 Cell counter optimieren + Details
 -	Möglichkeit, mehrere Zelltypen zu zählen
@@ -19,7 +21,3 @@
 -	2 Zusätzliche Unterseiten mit Referenzwerten und kurze Beschreibungen + Bilder der verschiedenen Zellarten (WB + RB)
 -	Buttons, um die verschiedenen Unterseiten zu verknüpfen 
 -	Unterseite für Analyse (alle Resultate eines Blutbildes auf einer Seite)
-
-## V3.0 Daten in Switch Drive speichern + Login
--	Daten werden erfolgreich im Switch Drive gespeichert
--	neue Benutzer können sich registrieren und dann einloggen
