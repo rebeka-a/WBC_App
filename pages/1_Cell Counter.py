@@ -8,6 +8,7 @@ from utils.login_manager import LoginManager
 
 LoginManager().go_to_login('Start.py')
 
+
 st.title("📋 Gesammelte Zellzählungen")
 
 # Initialisiere DataManager
@@ -79,6 +80,10 @@ st.markdown("---")
 
 # Tabelle sortieren
 if not st.session_state['data_df'].empty:
+    # Konvertiere 'timestamp' in datetime, falls nötig
+    st.session_state['data_df']['timestamp'] = pd.to_datetime(st.session_state['data_df']['timestamp'], errors='coerce')
+    
+    # Sortiere die Daten
     df_sorted = st.session_state['data_df'].sort_values(by='timestamp', ascending=False)
     st.dataframe(df_sorted)
 else:
