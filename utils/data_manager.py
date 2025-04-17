@@ -86,6 +86,7 @@ class DataManager:
             ValueError: If an unsupported protocol is specified
         """
         if protocol == 'webdav':
+            st.write("Lade secrets.toml:", st.secrets)  # Debugging-Ausgabe
             try:
                 secrets = st.secrets['webdav']
                 return fsspec.filesystem(
@@ -94,7 +95,7 @@ class DataManager:
                     auth=(secrets['username'], secrets['password'])
                 )
             except KeyError as e:
-                st.error(f"Fehler: Der Schlüssel '{e.args[0]}' fehlt in secrets.toml.")
+                st.error(f"Fehler: Der Schlüssel '{e.args[0]}' fehlt in secrets.toml. Bitte überprüfen Sie die Datei.")
                 raise
         elif protocol == 'file':
             return fsspec.filesystem('file')

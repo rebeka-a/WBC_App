@@ -17,7 +17,12 @@
 ## V2.0 Cell counter optimieren + Details
 -	Möglichkeit, mehrere Zelltypen zu zählen
 -	Möglichkeit, Zellzahl zu erhöhen oder zu reduzieren 
+
+## V3.0 Rotes Blutbild und Unterseiten
 -	Neue Unterseite, um RB zu analysieren 
--	2 Zusätzliche Unterseiten mit Referenzwerten und kurze Beschreibungen + Bilder der verschiedenen Zellarten (WB + RB)
 -	Buttons, um die verschiedenen Unterseiten zu verknüpfen 
 -	Unterseite für Analyse (alle Resultate eines Blutbildes auf einer Seite)
+
+## V4.0 unterseiten Deteils ergänzen
+
+-	2 Zusätzliche Unterseiten mit Referenzwerten und kurze Beschreibungen + Bilder der verschiedenen Zellarten (WB + RB)
