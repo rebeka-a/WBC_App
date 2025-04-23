@@ -23,6 +23,5 @@
 -	Buttons, um die verschiedenen Unterseiten zu verknüpfen 
 -	Unterseite für Analyse (alle Resultate eines Blutbildes auf einer Seite)
 
-## V4.0 unterseiten Deteils ergänzen
-
+## V4.0 Unterseiten Deteils ergänzen
 -	2 Zusätzliche Unterseiten mit Referenzwerten und kurze Beschreibungen + Bilder der verschiedenen Zellarten (WB + RB)
