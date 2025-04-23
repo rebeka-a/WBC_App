@@ -61,8 +61,14 @@ st.subheader("🩸 Zellen zählen")
 cols = st.columns(len(wbc_types))
 for i, cell in enumerate(wbc_types):
     with cols[i]:
-        if st.button(f"{cell} ({st.session_state['counts'][cell]})", key=f"btn_{cell}"):
+        # Display the cell type and count
+        st.markdown(f"**{cell} ({st.session_state['counts'][cell]})**")
+        # Buttons for increasing and decreasing the count
+        if st.button("➕", key=f"btn_increase_{cell}"):
             st.session_state['counts'][cell] += 1
+        if st.button("➖", key=f"btn_decrease_{cell}"):
+            if st.session_state['counts'][cell] > 0:  # Prevent negative counts
+                st.session_state['counts'][cell] -= 1
 
 # Speichern
 if st.button("Speichern"):
