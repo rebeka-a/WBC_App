@@ -4,16 +4,12 @@ from utils.data_manager import DataManager
 from utils.login_manager import LoginManager
 
 # Seitenkonfiguration
-st.set_page_config(page_title="Blood Cell Data & Reference Values", layout="wide")
+st.set_page_config(page_title="Start", layout="wide")
 
 # Initialize the data manager
 data_manager = DataManager(fs_protocol='webdav', fs_root_folder="WBC_Data")  # switch drive
 
-# Login-Logik
-login_manager = LoginManager(data_manager)
-login_manager.login_register()
-
-# --- Main Page Content ---
+# --- Main Page Content (Text wird zuerst angezeigt) ---
 st.title("Blood Cell Counter")
 
 st.write(
@@ -35,12 +31,30 @@ st.write(
     "- Bei Fragen oder Feedback wenden Sie sich gerne an das Entwicklerteam."
 )
 
-# Load the data from the persistent storage into the session state
-data_manager.load_user_data(
-    session_state_key='data_df',
-    file_name='data.csv',
-    initial_value=pd.DataFrame(columns=["timestamp", "counts", "gender", "birth_date"]),
-    parse_dates=['timestamp']
-)
+st.markdown("---")  # Trennlinie
 
-# Navigation über separate Seiten
+# --- Login Manager ---
+login_manager = LoginManager(data_manager)
+
+# --- Login/Register Bereich ---
+if not login_manager.is_logged_in():
+    # Nur wenn der Benutzer noch nicht eingeloggt ist
+    st.subheader("🔐 Anmeldung")
+    st.info(
+        "ℹ️ Bitte melden Sie sich an oder registrieren Sie sich, um alle Funktionen der App nutzen zu können.",
+        icon="ℹ️"
+    )
+    with st.container():
+        login_manager.login_register()
+else:
+    # Wenn schon eingeloggt: Kurze Bestätigung
+    st.success(f"✅ Angemeldet als {login_manager.get_current_user()}")
+
+# --- Daten laden (nur wenn eingeloggt) ---
+if login_manager.is_logged_in():
+    data_manager.load_user_data(
+        session_state_key='data_df',
+        file_name='data.csv',
+        initial_value=pd.DataFrame(columns=["timestamp", "counts", "gender", "birth_date"]),
+        parse_dates=['timestamp']
+    )

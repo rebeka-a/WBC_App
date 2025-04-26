@@ -10,9 +10,9 @@ from utils.login_manager import LoginManager
 st.set_page_config(page_title="Blood Cell Data & Reference Values", layout="wide")
 
 # Zugriffsschutz
-LoginManager().go_to_login('Start.py')
+LoginManager().go_to_login('0_Home.py')  # <<< Seitenname korrigiert!
 
-# Titel
+# --- Hauptbereich ---
 st.title("Weisses Blutbild")
 
 # DataManager initialisieren
@@ -45,7 +45,7 @@ if "action_history" not in st.session_state:
 st.subheader("Patientendaten")
 
 # Hinweis, wenn Patientendaten fehlen
-if "patient_id" not in st.session_state and "gender" not in st.session_state and "birth_date" not in st.session_state:
+if not st.session_state.get("patient_id") and not st.session_state.get("gender") and not st.session_state.get("birth_date"):
     st.warning("⚠️ Bitte neue Patientendaten eingeben.")
 
 # Patienten-ID eingeben
@@ -62,7 +62,7 @@ gender = st.selectbox(
     index=["", "Männlich", "Weiblich"].index(st.session_state.get("gender", "")) if "gender" in st.session_state else 0
 )
 
-# Geburtsdatum behandeln (sicher gegen leeren String)
+# Geburtsdatum behandeln
 birth_date_str = st.session_state.get("birth_date", "")
 if birth_date_str:
     try:
@@ -74,19 +74,18 @@ else:
 
 birth_date = st.date_input(
     "Geburtsdatum eingeben:",
-    value=birth_date_value
+    value=birth_date_value or datetime.date(2000, 1, 1)
 )
 
 # Patientendaten speichern
 if patient_id:
     st.session_state["patient_id"] = patient_id
-if gender:
-    if gender != "":
-        st.session_state["gender"] = gender
+if gender and gender != "":
+    st.session_state["gender"] = gender
 if birth_date:
     st.session_state["birth_date"] = birth_date.strftime("%d.%m.%Y")
 
-# 🔹 Patientendaten zurücksetzen Button direkt unter der Eingabe
+# 🔹 Patientendaten zurücksetzen
 if st.button("🧹 Patientendaten zurücksetzen", key="reset_patient_button", use_container_width=True):
     st.session_state.pop("patient_id", None)
     st.session_state.pop("gender", None)
@@ -94,20 +93,19 @@ if st.button("🧹 Patientendaten zurücksetzen", key="reset_patient_button", us
     st.success("Patientendaten wurden zurückgesetzt!")
     st.rerun()
 
-# Alter berechnen nur wenn Geburtsdatum existiert
+# Alter berechnen
 if birth_date:
     today = datetime.date.today()
     age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
 else:
     age = None
 
-# Zelltypenliste automatisch basierend auf counts
+# --- Zellzählung ---
+st.subheader("Zellen zählen")
+
 wbc_types = list(st.session_state["counts"].keys())
 
 button_colors = ["#1f77b4", "#1f77b4", "#d62728", "#9467bd", "#2ca02c", "#ff7f0e", "#8c564b", "#e377c2"]
-
-# --- Zellzählung ---
-st.subheader("Zellen zählen")
 
 clicked_cell = None
 
@@ -125,7 +123,7 @@ if clicked_cell:
     st.session_state["action_history"].append(clicked_cell)
     st.rerun()
 
-# --- Steuerung (nur Zellzählung) ---
+# --- Steuerung ---
 st.markdown("---")
 st.subheader("Steuerung")
 
