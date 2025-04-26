@@ -43,7 +43,7 @@ if "action_history" not in st.session_state:
 
 # Patientendaten
 st.subheader("Patientendaten")
-patient_id = st.text_input("Patienten-ID eingeben (optional)", placeholder="z.B. 12345")
+patient_id = st.text_input("Patienten-ID eingeben", placeholder="z.B. 12345")
 gender = st.radio("Geschlecht auswählen:", ["Männlich", "Weiblich"], index=0)
 birth_date = st.date_input("Geburtsdatum eingeben:")
 
