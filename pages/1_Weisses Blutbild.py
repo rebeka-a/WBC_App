@@ -41,26 +41,72 @@ if "counts" not in st.session_state:
 if "action_history" not in st.session_state:
     st.session_state["action_history"] = []
 
-# Patientendaten
+# --- Patientendaten ---
 st.subheader("Patientendaten")
-patient_id = st.text_input("Patienten-ID eingeben", placeholder="z.B. 12345")
-gender = st.radio("Geschlecht auswählen:", ["Männlich", "Weiblich"], index=0)
-birth_date = st.date_input("Geburtsdatum eingeben:")
 
-st.session_state["patient_id"] = patient_id
-st.session_state["gender"] = gender
-st.session_state["birth_date"] = birth_date.strftime("%d.%m.%Y")
+# Hinweis, wenn Patientendaten fehlen
+if "patient_id" not in st.session_state and "gender" not in st.session_state and "birth_date" not in st.session_state:
+    st.warning("⚠️ Bitte neue Patientendaten eingeben.")
 
-# Alter berechnen
-today = datetime.date.today()
-age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+# Patienten-ID eingeben
+patient_id = st.text_input(
+    "Patienten-ID eingeben", 
+    placeholder="z.B. 12345", 
+    value=st.session_state.get("patient_id", "")
+)
+
+# Geschlecht auswählen
+gender = st.selectbox(
+    "Geschlecht auswählen:",
+    ["", "Männlich", "Weiblich"],
+    index=["", "Männlich", "Weiblich"].index(st.session_state.get("gender", "")) if "gender" in st.session_state else 0
+)
+
+# Geburtsdatum behandeln (sicher gegen leeren String)
+birth_date_str = st.session_state.get("birth_date", "")
+if birth_date_str:
+    try:
+        birth_date_value = datetime.datetime.strptime(birth_date_str, "%d.%m.%Y").date()
+    except ValueError:
+        birth_date_value = None
+else:
+    birth_date_value = None
+
+birth_date = st.date_input(
+    "Geburtsdatum eingeben:",
+    value=birth_date_value
+)
+
+# Patientendaten speichern
+if patient_id:
+    st.session_state["patient_id"] = patient_id
+if gender:
+    if gender != "":
+        st.session_state["gender"] = gender
+if birth_date:
+    st.session_state["birth_date"] = birth_date.strftime("%d.%m.%Y")
+
+# 🔹 Patientendaten zurücksetzen Button direkt unter der Eingabe
+if st.button("🧹 Patientendaten zurücksetzen", key="reset_patient_button", use_container_width=True):
+    st.session_state.pop("patient_id", None)
+    st.session_state.pop("gender", None)
+    st.session_state.pop("birth_date", None)
+    st.success("Patientendaten wurden zurückgesetzt!")
+    st.rerun()
+
+# Alter berechnen nur wenn Geburtsdatum existiert
+if birth_date:
+    today = datetime.date.today()
+    age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+else:
+    age = None
 
 # Zelltypenliste automatisch basierend auf counts
 wbc_types = list(st.session_state["counts"].keys())
 
 button_colors = ["#1f77b4", "#1f77b4", "#d62728", "#9467bd", "#2ca02c", "#ff7f0e", "#8c564b", "#e377c2"]
 
-# Zellzählung
+# --- Zellzählung ---
 st.subheader("Zellen zählen")
 
 clicked_cell = None
@@ -79,7 +125,7 @@ if clicked_cell:
     st.session_state["action_history"].append(clicked_cell)
     st.rerun()
 
-# Steuerung Rückgängig und Zurücksetzen
+# --- Steuerung (nur Zellzählung) ---
 st.markdown("---")
 st.subheader("Steuerung")
 
@@ -99,14 +145,14 @@ with col_undo:
             st.info("Keine Aktion vorhanden zum Rückgängigmachen.")
 
 with col_reset:
-    if st.button("🧹 Zurücksetzen", key="reset_button", use_container_width=True):
+    if st.button("🧹 Zellzählung zurücksetzen", key="reset_button", use_container_width=True):
         for cell in st.session_state["counts"].keys():
             st.session_state["counts"][cell] = 0
         st.session_state["action_history"].clear()
         st.success("Alle Zählungen wurden zurückgesetzt.")
         st.rerun()
 
-# Zellverteilung (jetzt wieder absolute Zellzahlen!)
+# --- Zellverteilung ---
 st.markdown("---")
 st.subheader("Zellverteilung")
 
@@ -120,7 +166,6 @@ ax.set_title("Verteilung der Blutzellen")
 ax.set_xticks(np.arange(len(wbc_types)))
 ax.set_xticklabels(wbc_types, rotation=30, ha="right")
 
-# Anzahl über den Balken schreiben
 for bar in bars:
     height = bar.get_height()
     ax.annotate(f'{int(height)}',
@@ -131,20 +176,19 @@ for bar in bars:
 
 st.pyplot(fig)
 
-# Aktionen (Speichern)
+# --- Aktionen (Speichern) ---
 st.markdown("---")
 st.subheader("⚙️ Aktionen")
 
 if st.button("💾 Zellzählung speichern"):
     new_entry = {
         "timestamp": datetime.datetime.now(),
-        "patient_id": st.session_state["patient_id"],
+        "patient_id": st.session_state.get("patient_id", ""),
         "counts": st.session_state["counts"].copy(),
-        "gender": st.session_state["gender"],
-        "birth_date": st.session_state["birth_date"]
+        "gender": st.session_state.get("gender", ""),
+        "birth_date": st.session_state.get("birth_date", "")
     }
     new_df = pd.DataFrame([new_entry])
     st.session_state["data_df"] = pd.concat([st.session_state["data_df"], new_df], ignore_index=True)
     data_manager.save_data("data_df")
     st.success("Zellzählung erfolgreich gespeichert!")
-

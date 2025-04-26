@@ -32,7 +32,10 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
 
     # Patienten-IDs für Filter
     patient_ids = st.session_state['data_df']['patient_id'].dropna().unique()
-    selected_patient_id = st.selectbox("🔍 Ergebnisse filtern nach Patienten-ID (optional)", options=["Alle"] + list(patient_ids))
+    selected_patient_id = st.selectbox(
+        "🔍 Ergebnisse filtern nach Patienten-ID (optional)", 
+        options=["Alle"] + list(patient_ids)
+    )
 
     if selected_patient_id != "Alle":
         filtered_df = st.session_state['data_df'][st.session_state['data_df']['patient_id'] == selected_patient_id]
@@ -45,19 +48,28 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
         timestamp = pd.to_datetime(row.get('timestamp'))
         timestamp_str = timestamp.strftime("%Y-%m-%d %H:%M:%S") if not pd.isnull(timestamp) else "kein Datum"
 
-        with st.expander(f"📅 Eintrag {idx + 1} – {timestamp_str}"):
+        # Patienten-ID holen und behandeln
+        patient_id = row.get('patient_id')
+        if not patient_id or pd.isna(patient_id) or str(patient_id).strip() == "":
+            patient_label = "**Patienten-ID: Unbekannt**"
+        else:
+            patient_label = f"**Patienten-ID: {patient_id}**"
+
+        # --- Neuer Expander-Titel ---
+        with st.expander(f"🆔 {patient_label} – {timestamp_str}"):
             st.markdown(f"""
-            🆔 **Patienten-ID:** {row.get('patient_id', 'Keine ID')}  
-            🧑 **Geschlecht:** {row.get('gender', 'Unbekannt')}  
-            🎂 **Geburtsdatum:** {row.get('birth_date', 'Unbekannt')} | **Alter:** {row.get('age', 'Unbekannt')}
+            **Patienten-ID:** {row.get('patient_id', 'Keine ID')}  
+            **Geschlecht:** {row.get('gender', 'Unbekannt')}  
+            **Geburtsdatum:** {row.get('birth_date', 'Unbekannt')} | **Alter:** {row.get('age', 'Unbekannt')}
             """)
 
             # Zellzählung kompakt darstellen
             counts = row.get('counts', {})
-            if isinstance(counts, dict) and counts:
-                st.markdown("🔬 **Zellzählung:**")
+            if isinstance(counts, dict) and any(value > 0 for value in counts.values()):
+                st.markdown("**Weisses Blutbild:**")
                 for zelltyp, anzahl in counts.items():
-                    st.markdown(f"- {zelltyp}: {anzahl}")
+                    if anzahl > 0:
+                        st.markdown(f"- {zelltyp}: {anzahl}")
             else:
                 st.info("Keine Zellzählung gespeichert.")
 
@@ -69,7 +81,7 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
                 auffaelligkeiten = {}
 
             if auffaelligkeiten:
-                st.markdown("🧬 **Morphologische Auffälligkeiten:**")
+                st.markdown("**Morphologische Auffälligkeiten:**")
                 for merkmal, stufe in auffaelligkeiten.items():
                     st.markdown(f"- {merkmal}: {stufe}")
             else:
@@ -85,7 +97,7 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
     # Download-Button
     csv = filtered_df.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="💾 Gesamte Ergebnisse als CSV herunterladen",
+        label="💾 Alle Ergebnisse als CSV herunterladen",
         data=csv,
         file_name='gespeicherte_ergebnisse.csv',
         mime='text/csv'

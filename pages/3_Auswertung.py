@@ -150,31 +150,34 @@ def format_data():
     return pd.DataFrame(data, columns=["Zelltyp", "Gezählte Zellen", "Gezählte %", "Referenzwerte (%)", "Status"])
 
 # -------------------------------
-# Zellzählung & Morphologie Anzeige
+# Zellzählung Anzeige
 # -------------------------------
 
 st.subheader("Übersicht Zellzählungen")
 
-# Patienteninformation dynamisch zusammenbauen
-patient_info = f"**Patient:** {gender}"
-if birth_date_str:
-    patient_info += f", **Geburtsdatum:** {birth_date_str}"
-if age is not None:
-    patient_info += f", **Alter:** {age}"
-if patient_id:
-    patient_info += f", **Patienten-ID:** {patient_id}"
+if sum(st.session_state['counts'].values()) > 0:
+    # Patienteninformation dynamisch zusammenbauen
+    patient_info = f"**Patient:** {gender}"
+    if birth_date_str:
+        patient_info += f", **Geburtsdatum:** {birth_date_str}"
+    if age is not None:
+        patient_info += f", **Alter:** {age}"
+    if patient_id:
+        patient_info += f", **Patienten-ID:** {patient_id}"
 
-st.markdown(patient_info)
-st.markdown("⬇️ Wert unter Normbereich | ⬆️ Wert über Normbereich")
+    st.markdown(patient_info)
+    st.markdown("⬇️ Wert unter Normbereich | ⬆️ Wert über Normbereich")
 
-data_df = format_data()
+    data_df = format_data()
 
-st.dataframe(
-    data_df.style.applymap(
-        lambda val: "color: red; font-weight: bold;" if val in ["⬆️", "⬇️"] else "",
-        subset=["Status"]
+    st.dataframe(
+        data_df.style.applymap(
+            lambda val: "color: red; font-weight: bold;" if val in ["⬆️", "⬇️"] else "",
+            subset=["Status"]
+        )
     )
-)
+else:
+    st.info("Noch keine Zellzählungen vorhanden.")
 
 # ---------------------------------
 # Morphologische Beurteilung Tabelle
@@ -183,7 +186,9 @@ st.dataframe(
 st.markdown("---")
 st.subheader("🧬 Morphologische Beurteilung")
 
-if 'morphology_results' in st.session_state:
+if 'morphology_results' in st.session_state and any(
+    val != "Keine" for val in st.session_state['morphology_results'].values()
+):
     morpho_results = st.session_state['morphology_results']
 
     morpho_df = pd.DataFrame({
@@ -193,19 +198,16 @@ if 'morphology_results' in st.session_state:
 
     auffaelligkeiten_df = morpho_df[morpho_df["Schweregrad"] != "Keine"]
 
-    if not auffaelligkeiten_df.empty:
-        st.dataframe(
-            auffaelligkeiten_df.style.applymap(
-                lambda val: "color: green;" if val == "Leicht" else
-                             "color: orange;" if val == "Mittel" else
-                             "color: red;" if val == "Stark" else "",
-                subset=["Schweregrad"]
-            )
+    st.dataframe(
+        auffaelligkeiten_df.style.applymap(
+            lambda val: "color: green;" if val == "Leicht" else
+                         "color: orange;" if val == "Mittel" else
+                         "color: red;" if val == "Stark" else "",
+            subset=["Schweregrad"]
         )
-    else:
-        st.info("Keine morphologischen Auffälligkeiten erkannt.")
+    )
 else:
-    st.info("Noch keine morphologischen Beurteilungen gespeichert.")
+    st.info("Noch keine morphologischen Auffälligkeiten vorhanden.")
 
 # -------------------------------
 # Ergebnisse speichern
