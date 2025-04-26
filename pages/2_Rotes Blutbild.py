@@ -3,16 +3,10 @@ import pandas as pd
 
 # App Setup
 st.set_page_config(page_title="Morphologische Beurteilung App", layout="wide")
-st.title("🩸 Morphologische Beurteilung der Erythrozyten (App-Version)")
+st.title("Rotes Blutbild")
 
-st.markdown("""
-Bitte bewerten Sie die morphologischen Veränderungen:
-""")
-
-st.markdown("---")
-
-# 🧑‍⚕️ Patienten-ID übernehmen oder eingeben
-st.subheader("🧑‍⚕️ Patientendaten")
+#Patienten-ID übernehmen oder eingeben
+st.subheader("Patientendaten")
 
 if "patient_id" in st.session_state and st.session_state["patient_id"]:
     # Wenn bereits eine Patienten-ID existiert, zeige sie an
@@ -27,7 +21,7 @@ else:
 form_changes = ["Mikrozytär", "Makrozytär", "Anisozytose", "Poikilozytose", "Targetzellen", "Fragmentozyten", "Sichelzellen", "Sphärozyten", "Elliptozyten", "Stomatozyten"]
 color_changes = ["Hypochrom", "Hyperchrom", "Polychromasie"]
 inclusions = ["Basophile Tüpfelung", "Howell-Jolly-Körperchen", "Pappenheimer-Körperchen", "Heinz-Innenkörperchen"]
-special_behaviors = ["Agglutinine", "Erythroblasten"]
+special_behaviors = ["Erythroblasten", "Geldrollenbildung"]
 
 # Alle Begriffe zusammenführen
 morphological_changes = form_changes + color_changes + inclusions + special_behaviors
@@ -35,7 +29,10 @@ morphological_changes = form_changes + color_changes + inclusions + special_beha
 # Ergebnisse speichern
 results = {}
 
-st.subheader("📋 Morphologische Auffälligkeiten")
+st.subheader("Morphologische Auffälligkeiten")
+st.markdown("""
+Bitte bewerten Sie die morphologischen Veränderungen:
+""")
 
 # Kompakt: Begriff + Slider direkt nebeneinander
 for change in morphological_changes:

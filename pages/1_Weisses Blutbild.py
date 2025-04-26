@@ -36,7 +36,7 @@ if "counts" not in st.session_state:
         "Monozyten": 0,
         "Lymphozyten": 0,
         "Plasmazellen": 0,
-        "Vorstufen (Myelozyten/Metamyelozyten)": 0
+        "Vorstufen": 0
     }
 if "action_history" not in st.session_state:
     st.session_state["action_history"] = []
@@ -55,17 +55,8 @@ st.session_state["birth_date"] = birth_date.strftime("%d.%m.%Y")
 today = datetime.date.today()
 age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
 
-# Zelltypenliste in korrekter Bezeichnung
-wbc_types = [
-    "Segmentkernige Neutrophile",
-    "Stabkernige Neutrophile",
-    "Eosinophile",
-    "Basophile",
-    "Monozyten",
-    "Lymphozyten",
-    "Plasmazellen",
-    "Vorstufen (Myelozyten/Metamyelozyten)"
-]
+# Zelltypenliste automatisch basierend auf counts
+wbc_types = list(st.session_state["counts"].keys())
 
 button_colors = ["#1f77b4", "#1f77b4", "#d62728", "#9467bd", "#2ca02c", "#ff7f0e", "#8c564b", "#e377c2"]
 
@@ -115,31 +106,26 @@ with col_reset:
         st.success("Alle Zählungen wurden zurückgesetzt.")
         st.rerun()
 
-# Zellverteilung (jetzt als Prozentbalken!)
+# Zellverteilung (jetzt wieder absolute Zellzahlen!)
 st.markdown("---")
 st.subheader("Zellverteilung")
 
-# Berechnung der Prozentwerte
-total_cells = sum(st.session_state["counts"].values())
-percentages = [(count / total_cells * 100) if total_cells > 0 else 0 for count in [st.session_state["counts"][cell] for cell in wbc_types]]
-
 fig, ax = plt.subplots(figsize=(12, 6))
-bars = ax.bar(wbc_types, percentages,
+bars = ax.bar(wbc_types, [st.session_state["counts"][cell] for cell in wbc_types],
               color=button_colors, edgecolor='black', alpha=0.8)
 
-ax.set_ylabel("Prozentuale Verteilung (%)")
+ax.set_ylabel("Anzahl der Zellen")
 ax.set_xlabel("Blutzelltypen")
-ax.set_title("Prozentuale Verteilung der Blutzellen")
-ax.set_ylim(0, 100)
+ax.set_title("Verteilung der Blutzellen")
 ax.set_xticks(np.arange(len(wbc_types)))
 ax.set_xticklabels(wbc_types, rotation=30, ha="right")
 
-# Prozentwerte über die Balken schreiben
-for bar, percentage in zip(bars, percentages):
+# Anzahl über den Balken schreiben
+for bar in bars:
     height = bar.get_height()
-    ax.annotate(f'{percentage:.1f}%',
+    ax.annotate(f'{int(height)}',
                 xy=(bar.get_x() + bar.get_width() / 2, height),
-                xytext=(0, 3),  # leicht oberhalb
+                xytext=(0, 3),
                 textcoords="offset points",
                 ha='center', va='bottom', fontsize=9)
 

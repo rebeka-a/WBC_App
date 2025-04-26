@@ -13,7 +13,7 @@ st.set_page_config(page_title="Zellzählungen, Referenzwerte & Morphologie", lay
 LoginManager().go_to_login('Start.py')
 
 # Setup
-st.title("📋 Zellzählungen, Referenzwerte & Morphologische Beurteilung")
+st.title("Auswertung")
 
 # DataManager initialisieren
 data_manager = DataManager()
@@ -26,14 +26,15 @@ if "data_df" not in st.session_state:
 # Patientendaten erfassen
 # -------------------------------
 
-st.subheader("🧑‍⚕️ Patientendaten")
+st.subheader("Patientendaten")
 
-# Eingabe der Patienten-ID
-patient_id = st.text_input("Patienten-ID eingeben (optional)", placeholder="z.B. 12345")
+#Patienten-ID übernehmen oder eingeben
+st.subheader("Patientendaten")
 
 # Vorhandene Patientendaten abrufen
 gender = st.session_state.get("gender", "Nicht angegeben")
 birth_date_str = st.session_state.get("birth_date", "Nicht angegeben")
+patient_id = st.session.state.get("patient_id", "Nicht angegeben")
 
 if birth_date_str != "Nicht angegeben":
     try:
@@ -105,9 +106,9 @@ def format_data():
 # Zellzählung & Morphologie Anzeige
 # -------------------------------
 
-st.subheader("📊 Übersicht Zellzählungen")
+st.subheader("Übersicht Zellzählungen")
 st.markdown(f"**Patient:** {gender}, **Geburtsdatum:** {birth_date_str}, **Alter:** {age}")
-st.markdown("⬇️ Wert unter Normbereich | ⬆️ Wert über Normbereich")
+st.markdown("Wichtige Information: ⬇️ Wert unter Normbereich     ⬆️ Wert über Normbereich")
 
 data_df = format_data()
 
