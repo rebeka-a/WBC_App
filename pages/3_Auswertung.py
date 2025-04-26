@@ -25,10 +25,7 @@ if "data_df" not in st.session_state:
 # -------------------------------
 # Patientendaten
 
-# Patienten-ID aus Session holen oder Eingabe
 patient_id = st.session_state.get("patient_id", "")
-
-# Geschlecht und Geburtsdatum aus Session holen
 gender = st.session_state.get("gender", "Nicht angegeben")
 birth_date_str = st.session_state.get("birth_date", "")
 
@@ -48,9 +45,7 @@ else:
 
 # -------------------------------
 # Zellzählung vorbereiten
-# -------------------------------
 
-# Zelltypenliste
 wbc_types = [
     "Segmentkernige Neutrophile",
     "Stabkernige Neutrophile",
@@ -62,7 +57,6 @@ wbc_types = [
     "Vorstufen"
 ]
 
-# Neue Referenzwerte
 def get_reference_values(age, gender):
     if age is None:
         return {
@@ -122,18 +116,15 @@ def get_reference_values(age, gender):
 
 reference_values = get_reference_values(age, gender)
 
-# Counts vorbereiten
 if 'counts' not in st.session_state:
     st.session_state['counts'] = {cell: 0 for cell in wbc_types}
 
-# Prozentuale Berechnung
 def calculate_percentages():
     total = sum(st.session_state['counts'].values())
     if total == 0:
         return {cell: 0 for cell in wbc_types}
     return {cell: round((count / total) * 100, 1) for cell, count in st.session_state['counts'].items()}
 
-# Tabelle formatieren
 def format_data():
     data = []
     percentages = calculate_percentages()
@@ -151,17 +142,15 @@ def format_data():
 
 # -------------------------------
 # Zellzählung Anzeige
-# -------------------------------
 
 st.subheader("Übersicht Zellzählungen")
 
 if sum(st.session_state['counts'].values()) > 0:
-    # Patienteninformation dynamisch zusammenbauen
     patient_info = f"**Patient:** {gender}"
     if birth_date_str:
         patient_info += f", **Geburtsdatum:** {birth_date_str}"
     if age is not None:
-        patient_info += f", **Alter:** {age}"
+        patient_info += f", **Alter:** {age} Jahre"
     if patient_id:
         patient_info += f", **Patienten-ID:** {patient_id}"
 
@@ -179,12 +168,11 @@ if sum(st.session_state['counts'].values()) > 0:
 else:
     st.info("Noch keine Zellzählungen vorhanden.")
 
-# ---------------------------------
-# Morphologische Beurteilung Tabelle
-# ---------------------------------
+# -------------------------------
+# Morphologische Beurteilung
 
 st.markdown("---")
-st.subheader("🧬 Morphologische Beurteilung")
+st.subheader("Morphologische Beurteilung")
 
 if 'morphology_results' in st.session_state and any(
     val != "Keine" for val in st.session_state['morphology_results'].values()
@@ -210,22 +198,52 @@ else:
     st.info("Noch keine morphologischen Auffälligkeiten vorhanden.")
 
 # -------------------------------
-# Ergebnisse speichern
-# -------------------------------
+# Ergebnisse speichern und herunterladen (nebeneinander)
 
 st.markdown("---")
-if st.button("Gesamte Ergebnisse speichern"):
-    result = {
-        "patient_id": patient_id,
-        "gender": gender,
-        "birth_date": birth_date_str,
-        "age": age if age is not None else "Nicht angegeben",
-        "counts": st.session_state['counts'],
-        "morphology_results": st.session_state.get('morphology_results', {}),
-        "timestamp": datetime.datetime.now()
+col_save, col_download = st.columns(2, gap="small")
+
+with col_save:
+    if st.button("Ergebnisse speichern", use_container_width=True):
+        result = {
+            "patient_id": patient_id,
+            "gender": gender,
+            "birth_date": birth_date_str,
+            "age": age if age is not None else "Nicht angegeben",
+            "counts": st.session_state['counts'],
+            "morphology_results": st.session_state.get('morphology_results', {}),
+            "timestamp": datetime.datetime.now()
+        }
+        try:
+            data_manager.append_record(session_state_key='data_df', record_dict=result)
+            st.success("Alle Ergebnisse wurden erfolgreich gespeichert!")
+        except Exception as e:
+            st.error(f"Fehler beim Speichern: {e}")
+
+with col_download:
+    download_result = {
+        "Patienten-ID": patient_id,
+        "Geschlecht": gender,
+        "Geburtsdatum": birth_date_str,
+        "Alter": age if age is not None else "Nicht angegeben",
+        "Zeitpunkt": datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
     }
-    try:
-        data_manager.append_record(session_state_key='data_df', record_dict=result)
-        st.success("Alle Ergebnisse wurden erfolgreich gespeichert!")
-    except Exception as e:
-        st.error(f"Fehler beim Speichern: {e}")
+
+    for cell, count in st.session_state['counts'].items():
+        download_result[f"Anzahl {cell}"] = count
+
+    if 'morphology_results' in st.session_state:
+        for param, severity in st.session_state['morphology_results'].items():
+            download_result[f"Morphologie: {param}"] = severity
+
+    download_df = pd.DataFrame([download_result])
+
+    csv = download_df.to_csv(index=False).encode('utf-8')
+
+    st.download_button(
+        label="Ergebnisse als CSV herunterladen",
+        data=csv,
+        file_name="ergebnisse_blutbild.csv",
+        mime="text/csv",
+        use_container_width=True
+    )

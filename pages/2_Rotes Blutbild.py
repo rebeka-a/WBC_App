@@ -4,15 +4,14 @@ import datetime
 
 # App Setup
 st.set_page_config(page_title="Morphologische Beurteilung App", layout="wide")
-st.title("Rotes Blutbild")
+st.title("Rotes Blutbild – Morphologische Beurteilung")
 
 # --- Patienteninformationen ---
-
 st.subheader("Patientendaten")
 
 # Patienten-ID
 patient_id = st.text_input(
-    "Patienten-ID eingeben",
+    "Patienten-ID",
     value=st.session_state.get("patient_id", ""),
     placeholder="z.B. 12345"
 )
@@ -24,73 +23,50 @@ if "gender" not in st.session_state:
     st.session_state["gender"] = ""
 
 gender = st.selectbox(
-    "Geschlecht auswählen:",
+    "Geschlecht",
     options=["", "Männlich", "Weiblich"],
     index=["", "Männlich", "Weiblich"].index(st.session_state["gender"]) if st.session_state["gender"] in ["Männlich", "Weiblich"] else 0
 )
-
-if gender != "":
+if gender:
     st.session_state["gender"] = gender
-else:
-    st.session_state["gender"] = ""
 
 # Geburtsdatum
-if "birth_date" in st.session_state:
-    try:
-        birth_date = datetime.datetime.strptime(st.session_state["birth_date"], "%d.%m.%Y").date()
-    except:
-        birth_date = None
-else:
-    birth_date = None
-
-birth_date_input = st.date_input(
-    "Geburtsdatum eingeben:",
-    value=birth_date if birth_date else None,
-    format="DD.MM.YYYY"
-)
-
-if birth_date_input:
-    st.session_state["birth_date"] = birth_date_input.strftime("%d.%m.%Y")
-else:
+if "birth_date" not in st.session_state:
     st.session_state["birth_date"] = ""
 
-# 🔹 Patientendaten zurücksetzen Button direkt unter der Eingabe:
-if st.button("🧹 Patientendaten zurücksetzen", key="reset_patient_button", use_container_width=True):
+birth_date_input = st.text_input(
+    "Geburtsdatum (TT.MM.JJJJ)",
+    value=st.session_state.get("birth_date", ""),
+    placeholder="z.B. 01.01.2000"
+)
+
+# Validierung des Geburtsdatums
+try:
+    if birth_date_input:
+        birth_date_obj = datetime.datetime.strptime(birth_date_input, "%d.%m.%Y").date()
+        st.session_state["birth_date"] = birth_date_input
+    else:
+        birth_date_obj = None
+except ValueError:
+    birth_date_obj = None
+    st.error("Ungültiges Datumsformat! Bitte TT.MM.JJJJ verwenden.")
+
+# Patientendaten zurücksetzen
+if st.button("Patientendaten zurücksetzen", key="reset_patient_button", use_container_width=True):
     st.session_state.pop("patient_id", None)
     st.session_state.pop("gender", None)
     st.session_state.pop("birth_date", None)
     st.success("Patientendaten wurden zurückgesetzt!")
     st.rerun()
 
-# Alter berechnen
-if st.session_state.get("birth_date"):
-    birth_date_obj = datetime.datetime.strptime(st.session_state["birth_date"], "%d.%m.%Y").date()
+# Alter berechnen (nur intern genutzt)
+if birth_date_obj:
     today = datetime.date.today()
     age = today.year - birth_date_obj.year - ((today.month, today.day) < (birth_date_obj.month, birth_date_obj.day))
 else:
     age = None
 
-# Patienteninfo schön darstellen
-patient_info = ""
-
-if st.session_state.get("gender"):
-    patient_info += f"**Geschlecht:** {st.session_state['gender']}"
-else:
-    patient_info += "**Geschlecht:** Nicht angegeben"
-
-if st.session_state.get("birth_date"):
-    patient_info += f", **Geburtsdatum:** {st.session_state['birth_date']}"
-
-if age is not None:
-    patient_info += f", **Alter:** {age} Jahre"
-
-if st.session_state.get("patient_id"):
-    patient_info += f", **Patienten-ID:** {st.session_state['patient_id']}"
-
-st.markdown(patient_info)
-
 # --- Morphologische Auffälligkeiten ---
-
 form_changes = [
     "Mikrozytär", "Makrozytär", "Anisozytose", "Poikilozytose",
     "Targetzellen", "Fragmentozyten", "Sichelzellen", "Sphärozyten",
@@ -104,7 +80,9 @@ morphological_changes = form_changes + color_changes + inclusions + special_beha
 
 results = {}
 
+st.markdown("---")
 st.subheader("Morphologische Auffälligkeiten")
+
 st.markdown("Bitte bewerten Sie die morphologischen Veränderungen:")
 
 for change in morphological_changes:
@@ -120,7 +98,7 @@ for change in morphological_changes:
                 key=change
             )
 
-# Farbliche Darstellung
+# Farbliche Darstellung je nach Schweregrad
 def style_severity(severity):
     if severity == "Stark":
         return ":red[**Stark**]"
@@ -131,31 +109,14 @@ def style_severity(severity):
     else:
         return ":gray[Keine]"
 
-# --- Zusammenfassung ---
+# --- Zusammenfassung der morphologischen Beurteilung ---
+auffaelligkeiten = {param: severity for param, severity in results.items() if severity != "Keine"}
 
-st.markdown("---")
-st.subheader("📋 Zusammenfassung deiner Einschätzungen")
+if auffaelligkeiten:
+    st.markdown("---")
+    st.subheader("Zusammenfassung der morphologischen Beurteilung")
+    for param, severity in auffaelligkeiten.items():
+        st.markdown(f"**{param}**: {style_severity(severity)}")
 
-with st.container():
-    for param, severity in results.items():
-        if severity != "Keine":
-            st.markdown(f"**{param}**: {style_severity(severity)}")
-
-# --- Speicherung ---
-
-st.markdown("---")
-if st.button("Ergebnisse speichern"):
-    if not st.session_state.get("patient_id") or not st.session_state.get("gender") or not st.session_state.get("birth_date"):
-        st.error("Bitte vollständige Patientendaten eingeben (ID, Geschlecht, Geburtsdatum), bevor gespeichert werden kann!")
-    else:
-        results_with_id = results.copy()
-        results_with_id["Patienten-ID"] = st.session_state.get("patient_id", "")
-        results_with_id["Geschlecht"] = st.session_state.get("gender", "")
-        results_with_id["Geburtsdatum"] = st.session_state.get("birth_date", "")
-
-        results_df = pd.DataFrame([results_with_id])
-        results_df.to_csv("morphologische_beurteilung_app.csv", index=False)
-        st.success("Ergebnisse wurden als 'morphologische_beurteilung_app.csv' gespeichert!")
-
-# Ergebnisse im Session State sichern
+# Ergebnisse nur intern im Session State speichern
 st.session_state['morphology_results'] = results

@@ -56,7 +56,7 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
             patient_label = f"**Patienten-ID: {patient_id}**"
 
         # --- Neuer Expander-Titel ---
-        with st.expander(f"🆔 {patient_label} – {timestamp_str}"):
+        with st.expander(f"{patient_label} – {timestamp_str}"):
             st.markdown(f"""
             **Patienten-ID:** {row.get('patient_id', 'Keine ID')}  
             **Geschlecht:** {row.get('gender', 'Unbekannt')}  
@@ -87,8 +87,8 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
             else:
                 st.info("Keine morphologischen Auffälligkeiten gespeichert.")
 
-            # 🗑️ Eintrag löschen
-            if st.button(f"🗑️ Diesen Eintrag löschen", key=f"delete_{idx}"):
+            # Eintrag löschen
+            if st.button(f"Diesen Eintrag löschen", key=f"delete_{idx}"):
                 delete_entry(row.get('timestamp'))
                 st.rerun()  # Seite neu laden nach Löschen
 
@@ -97,7 +97,7 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
     # Download-Button
     csv = filtered_df.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="💾 Alle Ergebnisse als CSV herunterladen",
+        label="Alle Ergebnisse als CSV herunterladen",
         data=csv,
         file_name='gespeicherte_ergebnisse.csv',
         mime='text/csv'
