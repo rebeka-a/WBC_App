@@ -7,3 +7,4 @@ Nichts.
 ### Müssen wir die Roadmap anpassen und falls ja, wie?
 Nein, wir müssen die Roadmap nicht anpassen.
 ### Welche Unterstützung brauchen wir, um unsere Ziele zu erreichen?
+Wir brauchen im Moment keine Unterstützung. 
