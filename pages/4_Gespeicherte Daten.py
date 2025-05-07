@@ -63,6 +63,8 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
             **Geburtsdatum:** {row.get('birth_date', 'Unbekannt')} | **Alter:** {row.get('age', 'Unbekannt')}
             """)
 
+
+
             # Zellzählung kompakt darstellen
             counts = row.get('counts', {})
             if isinstance(counts, dict) and any(value > 0 for value in counts.values()):
@@ -87,6 +89,10 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
             else:
                 st.info("Keine morphologischen Auffälligkeiten gespeichert.")
 
+            # Kommentar anzeigen
+            comment = row.get('comment', 'Kein Kommentar')
+            st.markdown(f"**Kommentar:** {comment}")
+            
             # Eintrag löschen
             if st.button(f"Diesen Eintrag löschen", key=f"delete_{idx}"):
                 delete_entry(row.get('timestamp'))

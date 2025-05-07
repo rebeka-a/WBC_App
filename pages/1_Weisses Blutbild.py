@@ -184,3 +184,9 @@ for bar in bars:
     )
 
 st.pyplot(fig)
+
+if st.button("Rotes Blutbild"):
+    st.switch_page("pages/2_Rotes Blutbild.py")
+
+if st.button("Auswertung"):
+    st.switch_page("pages/3_Auswertung.py")

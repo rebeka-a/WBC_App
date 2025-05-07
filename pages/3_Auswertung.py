@@ -197,6 +197,17 @@ if 'morphology_results' in st.session_state and any(
 else:
     st.info("Noch keine morphologischen Auffälligkeiten vorhanden.")
 
+# Kommentar hinzufügen
+
+st.markdown("---")
+st.subheader("Kommentar")
+
+comment = st.text_area(
+    "Kommentar",
+    value=st.session_state.get("comment", ""),
+    placeholder="Hier Kommentar eingeben..."
+)
+
 # -------------------------------
 # Ergebnisse speichern und herunterladen (nebeneinander)
 
@@ -212,6 +223,7 @@ with col_save:
             "age": age if age is not None else "Nicht angegeben",
             "counts": st.session_state['counts'],
             "morphology_results": st.session_state.get('morphology_results', {}),
+            "comment": comment,  # Kommentar hinzufügen
             "timestamp": datetime.datetime.now()
         }
         try:
@@ -219,6 +231,7 @@ with col_save:
             st.success("Alle Ergebnisse wurden erfolgreich gespeichert!")
         except Exception as e:
             st.error(f"Fehler beim Speichern: {e}")
+
 
 with col_download:
     download_result = {
@@ -247,3 +260,8 @@ with col_download:
         mime="text/csv",
         use_container_width=True
     )
+
+
+
+if st.button("Gespeicherte Daten"):
+    st.switch_page("pages/4_Gespeicherte Daten.py")
