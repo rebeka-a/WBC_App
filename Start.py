@@ -43,7 +43,7 @@ if st.session_state.get("authentication_status"):
 
     # --- Button to switch to "Weisses Blutbild" page ---
     if st.button("Weisses Blutbild"):
-        st.switch_page("pages/1_Weisses Blutbild")
+        st.switch_page("pages/1_Weisses Blutbild.py")
 
     # --- Logout button ---
     if st.button("Logout", key="logout_button", use_container_width=True):
