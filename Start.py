@@ -41,6 +41,11 @@ if st.session_state.get("authentication_status"):
     with st.container():
         st.success(f"Angemeldet als: **{user}**")
 
+    # --- Button to switch to "Weisses Blutbild" page ---
+    if st.button("Weisses Blutbild"):
+        st.switch_page("pages/1_Weisses Blutbild")
+
+    # --- Logout button ---
     if st.button("Logout", key="logout_button", use_container_width=True):
         login_manager.authenticator.logout()
         st.experimental_rerun()
