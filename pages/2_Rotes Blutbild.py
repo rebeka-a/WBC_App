@@ -7,7 +7,7 @@ st.set_page_config(page_title="Morphologische Beurteilung App", layout="wide")
 st.title("Rotes Blutbild – Morphologische Beurteilung")
 
 # --- Patienteninformationen ---
-st.subheader("Patientendaten")
+st.subheader("Patientendaten 📋")
 
 # Patienten-ID
 patient_id = st.text_input(
@@ -81,7 +81,7 @@ morphological_changes = form_changes + color_changes + inclusions + special_beha
 results = {}
 
 st.markdown("---")
-st.subheader("Morphologische Auffälligkeiten")
+st.subheader("Morphologische Auffälligkeiten 🔬")
 
 st.markdown("Bitte bewerten Sie die morphologischen Veränderungen:")
 

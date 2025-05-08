@@ -200,7 +200,7 @@ else:
 # Kommentar hinzufügen
 
 st.markdown("---")
-st.subheader("Kommentar")
+st.subheader("Kommentar ✒️")
 
 comment = st.text_area(
     "Kommentar",

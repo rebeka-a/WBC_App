@@ -44,7 +44,7 @@ if "action_history" not in st.session_state:
     st.session_state["action_history"] = []
 
 # --- Patientendaten ---
-st.subheader("Patientendaten")
+st.subheader("Patientendaten 📋")
 
 # Hinweis, wenn Patientendaten fehlen
 if not (st.session_state.get("patient_id") and st.session_state.get("gender") and st.session_state.get("birth_date")):
@@ -97,7 +97,7 @@ if st.button("Patientendaten zurücksetzen", use_container_width=True):
 
 # --- Zellzählung ---
 st.markdown("---")
-st.subheader("Zellen zählen")
+st.subheader("Zellen zählen 🔬")
 
 wbc_types = list(st.session_state["counts"].keys())
 button_colors = ["#1f77b4", "#1f77b4", "#d62728", "#9467bd", "#2ca02c", "#ff7f0e", "#8c564b", "#e377c2"]
@@ -147,7 +147,7 @@ with col_reset:
 
 # --- Zellverteilung Diagramm ---
 st.markdown("---")
-st.subheader("Zellverteilung")
+st.subheader("Zellverteilung 📊")
 
 fig, ax = plt.subplots(figsize=(12, 6))
 
