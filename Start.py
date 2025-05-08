@@ -12,7 +12,7 @@ data_manager = DataManager(fs_protocol='webdav', fs_root_folder="WBC_Data")
 login_manager = LoginManager(data_manager)
 
 # --- Hauptbereich ---
-st.title("Blood Cell Counter")
+st.title("Blood Cell Counter 🧮")
 
 # --- Ausführliche Einführung ---
 st.markdown("""
