@@ -29,9 +29,12 @@ Diese Anwendung wurde speziell entwickelt, Studierende und Laborfachpersonal im 
 🩸 Übersichtliche Darstellung aller erfassten Befunde sowie die Möglichkeit des Exports zur weiteren Analyse oder Archivierung  
 
 **Wichtige Hinweise:**  
+            
 🩸 Um die vollständige Funktionalität der Blood Cell Counter App nutzen zu können, ist eine Anmeldung erforderlich. Neue Nutzer haben die Möglichkeit, ein Benutzerkonto direkt innerhalb der Anwendung zu erstellen.  
 🩸 Alle eingegebenen Informationen werden ausschliesslich lokal oder innerhalb eines sicheren, geschützten Servers verarbeitet und gespeichert.  
+
 ---
+            
 """)
 
 # --- Anmeldung oder Logout Bereich ---
