@@ -22,16 +22,15 @@ Diese Anwendung wurde speziell entwickelt, Studierende und Laborfachpersonal im 
 
 **Funktionsübersicht:**
 
-🩸 Strukturierte und benutzerfreundliche Erfassung sowie manuelle Zählung weisser und roter Blutzellen  
+🩸 Strukturierte und benutzerfreundliche Erfassung sowie manuelle Zählung weißer und roter Blutzellen  
 🩸 Systematische Dokumentation und Bewertung von morphologischen Veränderungen in Blutausstrichen  
 🩸 Alters- und geschlechtsspezifische Referenzbereiche zur präzisen Beurteilung der erfassten Zellpopulationen  
 🩸 Sichere Speicherung, Archivierung und Verwaltung individueller Patientendaten zur kontinuierlichen Verlaufskontrolle  
 🩸 Übersichtliche Darstellung aller erfassten Befunde sowie die Möglichkeit des Exports zur weiteren Analyse oder Archivierung  
 
 **Wichtige Hinweise:**  
-            
 🩸 Um die vollständige Funktionalität der Blood Cell Counter App nutzen zu können, ist eine Anmeldung erforderlich. Neue Nutzer haben die Möglichkeit, ein Benutzerkonto direkt innerhalb der Anwendung zu erstellen.  
-🩸 Alle eingegebenen Informationen werden ausschliesslich lokal oder innerhalb eines sicheren, geschützten Servers verarbeitet und gespeichert.  
+🩸 Alle eingegebenen Informationen werden ausschließlich lokal oder innerhalb eines sicheren, geschützten Servers verarbeitet und gespeichert.  
 
 ---
 """)
@@ -56,19 +55,19 @@ if st.session_state.get("authentication_status"):
 
     st.markdown("")  # Abstand
 
-    # --- Logout Button darunter ---
+    # --- Logout Button (Standard mit Streamlit Authenticator) ---
     login_manager.authenticator.logout("Logout", "main")
-    st.rerun()
-    
+
     # --- Daten laden nach Login ---
     try:
         if "data_df" not in st.session_state:
-            data_manager.load_user_data(
-                session_state_key='data_df',
-                file_name='data.csv',
-                initial_value=pd.DataFrame(columns=["timestamp", "counts", "gender", "birth_date"]),
-                parse_dates=['timestamp']
-            )
+            with st.spinner("Lade Benutzerdaten..."):
+                data_manager.load_user_data(
+                    session_state_key='data_df',
+                    file_name='data.csv',
+                    initial_value=pd.DataFrame(columns=["timestamp", "counts", "gender", "birth_date"]),
+                    parse_dates=['timestamp']
+                )
     except Exception as e:
         st.error(f"Fehler beim Laden der Nutzerdaten: {e}")
 
