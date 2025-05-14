@@ -95,9 +95,13 @@ if st.button("Patientendaten zurücksetzen", use_container_width=True):
     st.success("Patientendaten wurden zurückgesetzt!")
     st.rerun()
 
-# --- Zellzählung ---
+# --- Zellzählung --- 
 st.markdown("---")
 st.subheader("Zellen zählen 🔬")
+
+# Display total cell count
+total_cells = sum(st.session_state["counts"].values())
+st.info(f"**Gesamtanzahl der gezählten Zellen:** {total_cells}")
 
 wbc_types = list(st.session_state["counts"].keys())
 button_colors = ["#1f77b4", "#1f77b4", "#d62728", "#9467bd", "#2ca02c", "#ff7f0e", "#8c564b", "#e377c2"]
