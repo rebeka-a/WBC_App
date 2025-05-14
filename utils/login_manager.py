@@ -1,4 +1,6 @@
 import secrets
+import re
+import time
 import streamlit as st
 import streamlit_authenticator as stauth
 from utils.data_manager import DataManager
@@ -75,14 +77,46 @@ class LoginManager:
             Das Passwort muss 8–20 Zeichen lang sein und mindestens einen Großbuchstaben, 
             einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen @$!%*?& enthalten.
             """)
-            res = self.authenticator.register_user()
-            if res[1] is not None:
-                st.success(f"Nutzer *{res[1]}* wurde erfolgreich registriert.")
-                try:
-                    self._save_auth_credentials()
-                    st.success("Zugangsdaten wurden gespeichert.")
-                except Exception as e:
-                    st.error(f"Fehler beim Speichern der Zugangsdaten: {e}")
+
+            with st.form("Registrierungsformular"):
+                email = st.text_input("E-Mail")
+                username = st.text_input("Benutzername")
+                first_name = st.text_input("Vorname")
+                last_name = st.text_input("Nachname")
+                password = st.text_input("Passwort", type="password")
+                submit = st.form_submit_button("Registrieren")
+
+            if submit:
+                with st.spinner("⏳ Registrierung wird verarbeitet..."):
+                    time.sleep(1)  # rein visuell
+
+                    # E-Mail validieren
+                    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+                        st.error("Bitte gib eine gültige E-Mail-Adresse ein.")
+                        return
+
+                    if not all([email, username, first_name, last_name, password]):
+                        st.error("Bitte fülle alle Felder aus.")
+                        return
+
+                    # Passwortanforderungen prüfen (kann erweitert werden)
+                    if not re.match(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,20}$', password):
+                        st.error("Passwort erfüllt nicht die Anforderungen.")
+                        return
+
+                    try:
+                        res = self.authenticator.register_user(
+                            first_name, last_name, username, email, password
+                        )
+                        if res[1] is not None:
+                            st.success(f"Nutzer *{res[1]}* wurde erfolgreich registriert.")
+                            self._save_auth_credentials()
+                            st.success("Zugangsdaten wurden gespeichert.")
+                        else:
+                            st.error("Registrierung fehlgeschlagen. Möglicherweise existiert der Benutzer bereits.")
+                    except Exception as e:
+                        st.error(f"Registrierung nicht möglich: {str(e)}")
+
             if stop:
                 st.stop()
 
@@ -91,7 +125,6 @@ class LoginManager:
         Wenn der Nutzer nicht eingeloggt ist, zur Login-Seite weiterleiten.
         Zeigt beim Warten eine schöne Ladeanimation.
         """
-
         if st.session_state.get("authentication_status") is None:
             # Ladeanimation anzeigen
             st.markdown(
@@ -124,4 +157,4 @@ class LoginManager:
         if st.session_state.get("authentication_status") is not True:
             st.switch_page(login_page_py_file)
         else:
-            self.authenticator.logout()  # Logout-Button anzeigen
+            self.authenticator.logout()
