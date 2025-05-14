@@ -222,16 +222,18 @@ with col_download:
     pdf = FPDF()
     pdf.add_page()
 
+    # Title
     pdf.set_font("Arial", "B", 12)
     pdf.cell(0, 10, "Ergebnisse der Zellzählung", ln=True, align="C")
     pdf.ln(5)
 
+    # Patient Information
     pdf.set_font("Arial", "", 10)
     pdf.multi_cell(0, 8, f"Patienten-ID: {patient_id} | Geschlecht: {gender} | Geburtsdatum: {birth_date_str} | Alter: {age} Jahre")
     pdf.cell(0, 10, f"Zeitpunkt: {datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')}", ln=True)
     pdf.ln(3)
 
-    # Tabelle Zellzählung
+    # Zellzählung Table
     pdf.set_font("Arial", "B", 10)
     pdf.cell(60, 8, "Zelltyp", border=1)
     pdf.cell(40, 8, "Anzahl", border=1)
@@ -246,21 +248,30 @@ with col_download:
 
     pdf.ln(5)
 
-    # Morphologie
+    # Morphologische Beurteilung Table
     pdf.set_font("Arial", "B", 11)
     pdf.cell(0, 8, "Morphologische Beurteilung:", ln=True)
+    pdf.ln(3)
+    pdf.set_font("Arial", "B", 10)
+    pdf.cell(80, 8, "Parameter", border=1)
+    pdf.cell(40, 8, "Schweregrad", border=1, ln=True)
     pdf.set_font("Arial", "", 10)
     for param, severity in st.session_state.get('morphology_results', {}).items():
-        pdf.cell(0, 8, f"{param}: {severity}", ln=True)
+        pdf.cell(80, 8, param, border=1)
+        pdf.cell(40, 8, severity, border=1, ln=True)
 
     pdf.ln(5)
+
+    # Kommentar Section
     pdf.set_font("Arial", "B", 11)
     pdf.cell(0, 8, "Kommentar:", ln=True)
     pdf.set_font("Arial", "", 10)
     pdf.multi_cell(0, 8, comment)
 
+    # Generate PDF Bytes
     pdf_bytes = pdf.output(dest='S').encode('latin-1')
 
+    # Download Button
     st.download_button(
         label="Ergebnisse als PDF herunterladen",
         data=pdf_bytes,
@@ -271,4 +282,3 @@ with col_download:
 
 if st.button("Gespeicherte Daten"):
     st.switch_page("pages/4_Gespeicherte Daten.py")
-    
