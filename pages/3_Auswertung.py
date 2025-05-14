@@ -223,50 +223,49 @@ with col_download:
     pdf.add_page()
 
     # Title
-    pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 10, "Ergebnisse der Zellzählung", ln=True, align="C")
-    pdf.ln(5)
+    pdf.set_font("Arial", "B", 10)  # Kleinere Schriftgröße
+    pdf.cell(0, 8, "Ergebnisse der Zellzählung", ln=True, align="C")
+    pdf.ln(4)  # Weniger Abstand nach dem Titel
 
     # Patient Information
-    pdf.set_font("Arial", "", 10)
-    pdf.multi_cell(0, 8, f"Patienten-ID: {patient_id} | Geschlecht: {gender} | Geburtsdatum: {birth_date_str} | Alter: {age} Jahre")
-    pdf.cell(0, 10, f"Zeitpunkt: {datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')}", ln=True)
-    pdf.ln(3)
+    pdf.set_font("Arial", "", 8)  # Kleinere Schriftgröße
+    pdf.multi_cell(0, 6, f"Patienten-ID: {patient_id} | Geschlecht: {gender} | Geburtsdatum: {birth_date_str} | Alter: {age} Jahre")
+    pdf.cell(0, 6, f"Zeitpunkt: {datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')}", ln=True)
+    pdf.ln(2)  # Weniger Abstand nach den Patientendaten
 
     # Zellzählung Table
-    pdf.set_font("Arial", "B", 10)
-    pdf.cell(60, 8, "Zelltyp", border=1)
-    pdf.cell(40, 8, "Anzahl", border=1)
-    pdf.cell(40, 8, "Referenz", border=1, ln=True)
-    pdf.set_font("Arial", "", 10)
+    pdf.set_font("Arial", "B", 8)  # Kleinere Schriftgröße
+    pdf.cell(60, 6, "Zelltyp", border=1)
+    pdf.cell(30, 6, "Anzahl", border=1)
+    pdf.cell(30, 6, "Referenz", border=1, ln=True)
+    pdf.set_font("Arial", "", 8)  # Kleinere Schriftgröße für die Inhalte
     for cell, (low, high) in reference_values.items():
         count = st.session_state['counts'].get(cell, 0)
         ref = f"{low}-{high}%"
-        pdf.cell(60, 8, cell, border=1)
-        pdf.cell(40, 8, str(count), border=1)
-        pdf.cell(40, 8, ref, border=1, ln=True)
+        pdf.cell(60, 6, cell, border=1)
+        pdf.cell(30, 6, str(count), border=1)
+        pdf.cell(30, 6, ref, border=1, ln=True)
 
-    pdf.ln(5)
+    pdf.ln(3)  # Weniger Abstand nach der Tabelle
 
     # Morphologische Beurteilung Table
-    pdf.set_font("Arial", "B", 11)
-    pdf.cell(0, 8, "Morphologische Beurteilung:", ln=True)
-    pdf.ln(3)
-    pdf.set_font("Arial", "B", 10)
-    pdf.cell(80, 8, "Parameter", border=1)
-    pdf.cell(40, 8, "Schweregrad", border=1, ln=True)
-    pdf.set_font("Arial", "", 10)
+    pdf.set_font("Arial", "B", 8)  # Kleinere Schriftgröße
+    pdf.cell(0, 6, "Morphologische Beurteilung:", ln=True)
+    pdf.ln(2)
+    pdf.cell(60, 6, "Parameter", border=1)
+    pdf.cell(30, 6, "Schweregrad", border=1, ln=True)
+    pdf.set_font("Arial", "", 8)  # Kleinere Schriftgröße für die Inhalte
     for param, severity in st.session_state.get('morphology_results', {}).items():
-        pdf.cell(80, 8, param, border=1)
-        pdf.cell(40, 8, severity, border=1, ln=True)
+        pdf.cell(60, 6, param, border=1)
+        pdf.cell(30, 6, severity, border=1, ln=True)
 
-    pdf.ln(5)
+    pdf.ln(3)  # Weniger Abstand nach der Tabelle
 
     # Kommentar Section
-    pdf.set_font("Arial", "B", 11)
-    pdf.cell(0, 8, "Kommentar:", ln=True)
-    pdf.set_font("Arial", "", 10)
-    pdf.multi_cell(0, 8, comment)
+    pdf.set_font("Arial", "B", 8)  # Kleinere Schriftgröße
+    pdf.cell(0, 6, "Kommentar:", ln=True)
+    pdf.set_font("Arial", "", 8)  # Kleinere Schriftgröße für den Kommentar
+    pdf.multi_cell(0, 6, comment)
 
     # Generate PDF Bytes
     pdf_bytes = pdf.output(dest='S').encode('latin-1')
