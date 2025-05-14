@@ -190,9 +190,9 @@ st.markdown("---")
 col_nav1, col_nav2 = st.columns(2)
 
 with col_nav1:
-    if st.button("➡️ Zum Roten Blutbild", use_container_width=True):
+    if st.button("Zum Roten Blutbild", use_container_width=True):
         st.switch_page("Rotes Blutbild")
 
 with col_nav2:
-    if st.button("📊 Zur Auswertung", use_container_width=True):
+    if st.button("Zur Auswertung", use_container_width=True):
         st.switch_page("Auswertung")

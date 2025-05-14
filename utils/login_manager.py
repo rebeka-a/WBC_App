@@ -1,14 +1,11 @@
 import secrets
 import streamlit as st
 import streamlit_authenticator as stauth
+from streamlit_authenticator.utilities.exceptions import RegisterError
 from utils.data_manager import DataManager
 
 
 class LoginManager:
-    """
-    Singleton class that manages application state, storage, and user authentication.
-    """
-
     def __new__(cls, *args, **kwargs):
         if 'login_manager' in st.session_state:
             return st.session_state.login_manager
@@ -32,7 +29,6 @@ class LoginManager:
         self.auth_cookie_key = secrets.token_urlsafe(32)
         self.auth_credentials = self._load_auth_credentials()
 
-        # Deutschsprachige Oberfläche & Captcha
         self.authenticator = stauth.Authenticate(
             self.auth_credentials,
             self.auth_cookie_name,
@@ -106,25 +102,25 @@ class LoginManager:
             self.authenticator.logout()
         else:
             st.info("""
-            🔐 Das Passwort muss 8–20 Zeichen lang sein und mindestens einen Großbuchstaben, 
+            Das Passwort muss 8 – 20 Zeichen lang sein und mindestens einen Großbuchstaben, 
             einen Kleinbuchstaben, eine Zahl und ein Sonderzeichen @$!%*?& enthalten.
             """)
-            res = self.authenticator.register_user()
-            if res[1] is not None:
-                st.success(f"Nutzer *{res[1]}* wurde erfolgreich registriert.")
-                try:
-                    self._save_auth_credentials()
-                    st.success("Zugangsdaten wurden gespeichert.")
-                except Exception as e:
-                    st.error(f"Fehler beim Speichern der Zugangsdaten: {e}")
+            try:
+                res = self.authenticator.register_user()
+                if res[1] is not None:
+                    st.success(f"Nutzer *{res[1]}* wurde erfolgreich registriert.")
+                    try:
+                        self._save_auth_credentials()
+                        st.success("Zugangsdaten wurden gespeichert.")
+                    except Exception:
+                        st.error("Fehler beim Speichern der Zugangsdaten.")
+            except RegisterError:
+                st.error("Registrierung fehlgeschlagen. Bitte überprüfe deine Eingaben.")
+
             if stop:
                 st.stop()
 
     def go_to_login(self, login_page_title: str):
-        """
-        Wenn der Nutzer nicht eingeloggt ist, zur Login-Seite weiterleiten.
-        Übergabe: login_page_title = Titel der Startseite in der Sidebar (z. B. '🏠 Startseite')
-        """
         if st.session_state.get("authentication_status") is not True:
             st.switch_page(login_page_title)
         else:
