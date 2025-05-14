@@ -48,11 +48,11 @@ if st.session_state.get("authentication_status"):
 
     with col1:
         if st.button("Zum Weissen Blutbild", use_container_width=True):
-            st.switch_page("1_Weisses Blutbild.py")
+            st.switch_page("pages/1_Weisses Blutbild.py")
 
     with col2:
         if st.button("Zum Roten Blutbild", use_container_width=True):
-            st.switch_page("2_Rotes Blutbild")
+            st.switch_page("pages/2_Rotes Blutbild.py")
 
     st.markdown("")  # Abstand
 

@@ -255,9 +255,9 @@ with col1:
         }
         try:
             data_manager.append_record(session_state_key='data_df', record_dict=result)
-            st.success("Alle Ergebnisse wurden erfolgreich gespeichert!")
+            st.success("Ergebnisse gespeichert!", icon="✅")
         except Exception as e:
-            st.error(f"Fehler beim Speichern: {e}")
+            st.error(f"Fehler beim Speichern der Ergebnisse: {e}")
 
 with col2:
     st.download_button(
