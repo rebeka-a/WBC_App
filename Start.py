@@ -57,10 +57,9 @@ if st.session_state.get("authentication_status"):
     st.markdown("")  # Abstand
 
     # --- Logout Button darunter ---
-    if st.button("Logout", key="logout_button", use_container_width=True):
-        login_manager.authenticator.logout()
-        st.rerun()  # ✅ KORRIGIERT
-
+    login_manager.authenticator.logout("Logout", "main")
+    st.rerun()
+    
     # --- Daten laden nach Login ---
     try:
         if "data_df" not in st.session_state:
