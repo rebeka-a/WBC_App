@@ -168,28 +168,23 @@ else:
 st.markdown("---")
 st.subheader("Morphologische Beurteilung")
 
-if 'morphology_results' in st.session_state and any(
-    val != "Keine" for val in st.session_state['morphology_results'].values()
-):
-    morpho_results = st.session_state['morphology_results']
+# Überprüfen, ob Ergebnisse vorhanden sind
+morpho_results = st.session_state.get('morphology_results', {})
+auffaelligkeiten_df = pd.DataFrame(
+    [{"Parameter": k, "Schweregrad": v} for k, v in morpho_results.items() if v != "Keine"]
+)
 
-    morpho_df = pd.DataFrame({
-        "Parameter": list(morpho_results.keys()),
-        "Schweregrad": list(morpho_results.values())
-    })
-
-    auffaelligkeiten_df = morpho_df[morpho_df["Schweregrad"] != "Keine"]
-
-    st.dataframe(
+if not auffaelligkeiten_df.empty:
+    # Tabelle mit farblicher Hervorhebung
+    st.table(
         auffaelligkeiten_df.style.applymap(
             lambda val: "color: green;" if val == "Leicht" else
-                         "color: orange;" if val == "Mittel" else
-                         "color: red;" if val == "Stark" else "",
-            subset=["Schweregrad"]
+                        "color: orange;" if val == "Mittel" else
+                        "color: red;" if val == "Schwer" else ""
         )
     )
 else:
-    st.info("Noch keine morphologischen Auffälligkeiten vorhanden.")
+    st.info("Keine morphologischen Auffälligkeiten vorhanden.")
 
 # Kommentar hinzufügen
 st.markdown("---")
@@ -276,3 +271,4 @@ with col_download:
 
 if st.button("Gespeicherte Daten"):
     st.switch_page("pages/4_Gespeicherte Daten.py")
+    
