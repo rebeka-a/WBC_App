@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import datetime
+import io
+from fpdf import FPDF
 from utils.data_manager import DataManager
 from utils.login_manager import LoginManager
 
@@ -22,9 +24,7 @@ data_manager = DataManager()
 if "data_df" not in st.session_state:
     data_manager.load_app_data(session_state_key="data_df", file_name="data.csv", initial_value=[])
 
-# -------------------------------
 # Patientendaten
-
 patient_id = st.session_state.get("patient_id", "")
 gender = st.session_state.get("gender", "Nicht angegeben")
 birth_date_str = st.session_state.get("birth_date", "")
@@ -43,9 +43,7 @@ if birth_date:
 else:
     age = None
 
-# -------------------------------
 # Zellzählung vorbereiten
-
 wbc_types = [
     "Segmentkernige Neutrophile",
     "Stabkernige Neutrophile",
@@ -140,9 +138,7 @@ def format_data():
         data.append([cell, count, f"{percent}%", f"{low}-{high}%", status])
     return pd.DataFrame(data, columns=["Zelltyp", "Gezählte Zellen", "Gezählte %", "Referenzwerte (%)", "Status"])
 
-# -------------------------------
 # Zellzählung Anzeige
-
 st.subheader("Übersicht Zellzählungen")
 
 if sum(st.session_state['counts'].values()) > 0:
@@ -168,9 +164,7 @@ if sum(st.session_state['counts'].values()) > 0:
 else:
     st.info("Noch keine Zellzählungen vorhanden.")
 
-# -------------------------------
 # Morphologische Beurteilung
-
 st.markdown("---")
 st.subheader("Morphologische Beurteilung")
 
@@ -198,7 +192,6 @@ else:
     st.info("Noch keine morphologischen Auffälligkeiten vorhanden.")
 
 # Kommentar hinzufügen
-
 st.markdown("---")
 st.subheader("Kommentar ✒️")
 
@@ -208,9 +201,7 @@ comment = st.text_area(
     placeholder="Hier Kommentar eingeben..."
 )
 
-# -------------------------------
-# Ergebnisse speichern und herunterladen (nebeneinander)
-
+# Ergebnisse speichern und herunterladen
 st.markdown("---")
 col_save, col_download = st.columns(2, gap="small")
 
@@ -223,7 +214,7 @@ with col_save:
             "age": age if age is not None else "Nicht angegeben",
             "counts": st.session_state['counts'],
             "morphology_results": st.session_state.get('morphology_results', {}),
-            "comment": comment,  # Kommentar hinzufügen
+            "comment": comment,
             "timestamp": datetime.datetime.now()
         }
         try:
@@ -232,36 +223,56 @@ with col_save:
         except Exception as e:
             st.error(f"Fehler beim Speichern: {e}")
 
-
 with col_download:
-    download_result = {
-        "Patienten-ID": patient_id,
-        "Geschlecht": gender,
-        "Geburtsdatum": birth_date_str,
-        "Alter": age if age is not None else "Nicht angegeben",
-        "Zeitpunkt": datetime.datetime.now().strftime("%d.%m.%Y %H:%M:%S")
-    }
+    pdf = FPDF()
+    pdf.add_page()
 
-    for cell, count in st.session_state['counts'].items():
-        download_result[f"Anzahl {cell}"] = count
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(0, 10, "Ergebnisse der Zellzählung", ln=True, align="C")
+    pdf.ln(5)
 
-    if 'morphology_results' in st.session_state:
-        for param, severity in st.session_state['morphology_results'].items():
-            download_result[f"Morphologie: {param}"] = severity
+    pdf.set_font("Arial", "", 10)
+    pdf.multi_cell(0, 8, f"Patienten-ID: {patient_id} | Geschlecht: {gender} | Geburtsdatum: {birth_date_str} | Alter: {age} Jahre")
+    pdf.cell(0, 10, f"Zeitpunkt: {datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')}", ln=True)
+    pdf.ln(3)
 
-    download_df = pd.DataFrame([download_result])
+    # Tabelle Zellzählung
+    pdf.set_font("Arial", "B", 10)
+    pdf.cell(60, 8, "Zelltyp", border=1)
+    pdf.cell(40, 8, "Anzahl", border=1)
+    pdf.cell(40, 8, "Referenz", border=1, ln=True)
+    pdf.set_font("Arial", "", 10)
+    for cell, (low, high) in reference_values.items():
+        count = st.session_state['counts'].get(cell, 0)
+        ref = f"{low}-{high}%"
+        pdf.cell(60, 8, cell, border=1)
+        pdf.cell(40, 8, str(count), border=1)
+        pdf.cell(40, 8, ref, border=1, ln=True)
 
-    csv = download_df.to_csv(index=False).encode('utf-8')
+    pdf.ln(5)
+
+    # Morphologie
+    pdf.set_font("Arial", "B", 11)
+    pdf.cell(0, 8, "Morphologische Beurteilung:", ln=True)
+    pdf.set_font("Arial", "", 10)
+    for param, severity in st.session_state.get('morphology_results', {}).items():
+        pdf.cell(0, 8, f"{param}: {severity}", ln=True)
+
+    pdf.ln(5)
+    pdf.set_font("Arial", "B", 11)
+    pdf.cell(0, 8, "Kommentar:", ln=True)
+    pdf.set_font("Arial", "", 10)
+    pdf.multi_cell(0, 8, comment)
+
+    pdf_bytes = pdf.output(dest='S').encode('latin-1')
 
     st.download_button(
-        label="Ergebnisse als CSV herunterladen",
-        data=csv,
-        file_name="ergebnisse_blutbild.csv",
-        mime="text/csv",
+        label="Ergebnisse als PDF herunterladen",
+        data=pdf_bytes,
+        file_name="ergebnisse_blutbild.pdf",
+        mime="application/pdf",
         use_container_width=True
     )
-
-
 
 if st.button("Gespeicherte Daten"):
     st.switch_page("pages/4_Gespeicherte Daten.py")

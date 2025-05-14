@@ -1,9 +1,19 @@
 import streamlit as st
 import pandas as pd
 import datetime
+from utils.data_manager import DataManager
+from utils.login_manager import LoginManager
 
 # App Setup
 st.set_page_config(page_title="Morphologische Beurteilung App", layout="wide")
+
+# --- DataManager und LoginManager initialisieren ---
+data_manager = DataManager()
+login_manager = LoginManager(data_manager)
+
+# --- Zugriffsschutz ---
+login_manager.go_to_login('Start.py')
+
 st.title("Rotes Blutbild – Morphologische Beurteilung")
 
 # --- Patienteninformationen ---
