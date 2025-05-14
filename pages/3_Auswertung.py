@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import datetime
 import io
+import re
 from fpdf import FPDF
 from utils.data_manager import DataManager
 from utils.login_manager import LoginManager
@@ -168,14 +169,12 @@ else:
 st.markdown("---")
 st.subheader("Morphologische Beurteilung")
 
-# Überprüfen, ob Ergebnisse vorhanden sind
 morpho_results = st.session_state.get('morphology_results', {})
 auffaelligkeiten_df = pd.DataFrame(
     [{"Parameter": k, "Schweregrad": v} for k, v in morpho_results.items() if v != "Keine"]
 )
 
 if not auffaelligkeiten_df.empty:
-    # Tabelle mit farblicher Hervorhebung
     st.table(
         auffaelligkeiten_df.style.applymap(
             lambda val: "color: green;" if val == "Leicht" else
@@ -186,7 +185,7 @@ if not auffaelligkeiten_df.empty:
 else:
     st.info("Keine morphologischen Auffälligkeiten vorhanden.")
 
-# Kommentar hinzufügen
+# Kommentar
 st.markdown("---")
 st.subheader("Kommentar ✒️")
 
@@ -196,19 +195,61 @@ comment = st.text_area(
     placeholder="Hier Kommentar eingeben..."
 )
 
-# Ergebnisse speichern und herunterladen
-st.markdown("---")
-col_save, col_download = st.columns(2, gap="small")
+# PDF-Erstellung vorbereiten
+pdf = FPDF()
+pdf.add_page()
+pdf.set_font("Arial", "B", 10)
+pdf.cell(0, 8, "Ergebnisse der Zellzählung", ln=True, align="C")
+pdf.ln(4)
+pdf.set_font("Arial", "", 8)
+pdf.multi_cell(0, 6, f"Patienten-ID: {patient_id} | Geschlecht: {gender} | Geburtsdatum: {birth_date_str} | Alter: {age} Jahre")
+pdf.cell(0, 6, f"Zeitpunkt: {datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')}", ln=True)
+pdf.ln(2)
+pdf.set_font("Arial", "B", 8)
+pdf.cell(60, 6, "Zelltyp", border=1)
+pdf.cell(30, 6, "Anzahl", border=1)
+pdf.cell(30, 6, "Referenz", border=1, ln=True)
+pdf.set_font("Arial", "", 8)
+for cell, (low, high) in reference_values.items():
+    count = st.session_state['counts'].get(cell, 0)
+    ref = f"{low}-{high}%"
+    pdf.cell(60, 6, cell, border=1)
+    pdf.cell(30, 6, str(count), border=1)
+    pdf.cell(30, 6, ref, border=1, ln=True)
+pdf.ln(3)
+pdf.set_font("Arial", "B", 8)
+pdf.cell(0, 6, "Morphologische Beurteilung:", ln=True)
+pdf.ln(2)
+pdf.cell(60, 6, "Parameter", border=1)
+pdf.cell(30, 6, "Schweregrad", border=1, ln=True)
+pdf.set_font("Arial", "", 8)
+for param, severity in morpho_results.items():
+    pdf.cell(60, 6, param, border=1)
+    pdf.cell(30, 6, severity, border=1, ln=True)
+pdf.ln(3)
+pdf.set_font("Arial", "B", 8)
+pdf.cell(0, 6, "Kommentar:", ln=True)
+pdf.set_font("Arial", "", 8)
+pdf.multi_cell(0, 6, comment)
 
-with col_save:
-    if st.button("Ergebnisse speichern", use_container_width=True):
+pdf_bytes = pdf.output(dest='S').encode('latin-1', 'replace')
+timestamp_str = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+safe_patient_id = re.sub(r'[^a-zA-Z0-9_-]', '_', patient_id or 'unbekannt')
+filename = f"Zellzählung_{safe_patient_id}_{timestamp_str}.pdf"
+
+# --- Alle Aktionen nebeneinander ---
+st.markdown("---")
+col1, col2, col3 = st.columns([1, 1, 1], gap="small")
+
+with col1:
+    if st.button("💾 Ergebnisse speichern", use_container_width=True):
         result = {
             "patient_id": patient_id,
             "gender": gender,
             "birth_date": birth_date_str,
             "age": age if age is not None else "Nicht angegeben",
             "counts": st.session_state['counts'],
-            "morphology_results": st.session_state.get('morphology_results', {}),
+            "morphology_results": morpho_results,
             "comment": comment,
             "timestamp": datetime.datetime.now()
         }
@@ -218,66 +259,15 @@ with col_save:
         except Exception as e:
             st.error(f"Fehler beim Speichern: {e}")
 
-with col_download:
-    pdf = FPDF()
-    pdf.add_page()
-
-    # Title
-    pdf.set_font("Arial", "B", 10)  # Kleinere Schriftgröße
-    pdf.cell(0, 8, "Ergebnisse der Zellzählung", ln=True, align="C")
-    pdf.ln(4)  # Weniger Abstand nach dem Titel
-
-    # Patient Information
-    pdf.set_font("Arial", "", 8)  # Kleinere Schriftgröße
-    pdf.multi_cell(0, 6, f"Patienten-ID: {patient_id} | Geschlecht: {gender} | Geburtsdatum: {birth_date_str} | Alter: {age} Jahre")
-    pdf.cell(0, 6, f"Zeitpunkt: {datetime.datetime.now().strftime('%d.%m.%Y %H:%M:%S')}", ln=True)
-    pdf.ln(2)  # Weniger Abstand nach den Patientendaten
-
-    # Zellzählung Table
-    pdf.set_font("Arial", "B", 8)  # Kleinere Schriftgröße
-    pdf.cell(60, 6, "Zelltyp", border=1)
-    pdf.cell(30, 6, "Anzahl", border=1)
-    pdf.cell(30, 6, "Referenz", border=1, ln=True)
-    pdf.set_font("Arial", "", 8)  # Kleinere Schriftgröße für die Inhalte
-    for cell, (low, high) in reference_values.items():
-        count = st.session_state['counts'].get(cell, 0)
-        ref = f"{low}-{high}%"
-        pdf.cell(60, 6, cell, border=1)
-        pdf.cell(30, 6, str(count), border=1)
-        pdf.cell(30, 6, ref, border=1, ln=True)
-
-    pdf.ln(3)  # Weniger Abstand nach der Tabelle
-
-    # Morphologische Beurteilung Table
-    pdf.set_font("Arial", "B", 8)  # Kleinere Schriftgröße
-    pdf.cell(0, 6, "Morphologische Beurteilung:", ln=True)
-    pdf.ln(2)
-    pdf.cell(60, 6, "Parameter", border=1)
-    pdf.cell(30, 6, "Schweregrad", border=1, ln=True)
-    pdf.set_font("Arial", "", 8)  # Kleinere Schriftgröße für die Inhalte
-    for param, severity in st.session_state.get('morphology_results', {}).items():
-        pdf.cell(60, 6, param, border=1)
-        pdf.cell(30, 6, severity, border=1, ln=True)
-
-    pdf.ln(3)  # Weniger Abstand nach der Tabelle
-
-    # Kommentar Section
-    pdf.set_font("Arial", "B", 8)  # Kleinere Schriftgröße
-    pdf.cell(0, 6, "Kommentar:", ln=True)
-    pdf.set_font("Arial", "", 8)  # Kleinere Schriftgröße für den Kommentar
-    pdf.multi_cell(0, 6, comment)
-
-    # Generate PDF Bytes
-    pdf_bytes = pdf.output(dest='S').encode('latin-1')
-
-    # Download Button
+with col2:
     st.download_button(
-        label="Ergebnisse als PDF herunterladen",
+        label="📄 PDF herunterladen",
         data=pdf_bytes,
-        file_name="ergebnisse_blutbild.pdf",
+        file_name=filename,
         mime="application/pdf",
         use_container_width=True
     )
 
-if st.button("Gespeicherte Daten"):
-    st.switch_page("pages/4_Gespeicherte Daten.py")
+with col3:
+    if st.button("📁 Gespeicherte Daten", use_container_width=True):
+        st.switch_page("pages/4_Gespeicherte Daten.py")
