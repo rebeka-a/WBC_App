@@ -14,7 +14,7 @@ login_manager = LoginManager(data_manager)
 # --- Hauptbereich ---
 st.title("Blood Cell Counter 🧮")
 
-# --- Ausführliche Einführung ---
+# --- Einführung ---
 st.markdown("""
 Willkommen zur **Blood Cell Counter App**.
 
@@ -34,21 +34,29 @@ Diese Anwendung wurde speziell entwickelt, Studierende und Laborfachpersonal im 
 🩸 Alle eingegebenen Informationen werden ausschliesslich lokal oder innerhalb eines sicheren, geschützten Servers verarbeitet und gespeichert.  
 
 ---
-            
 """)
 
-# --- Anmeldung oder Logout Bereich ---
+# --- Anmeldung / Benutzerbereich ---
 if st.session_state.get("authentication_status"):
     user = st.session_state.get("username", "Unbekannter Benutzer")
 
     with st.container():
         st.success(f"Angemeldet als: **{user}**")
 
-    # --- Button to switch to "Weisses Blutbild" page ---
-    if st.button("Weisses Blutbild"):
-        st.switch_page("pages/1_Weisses Blutbild.py")
+    # --- Buttons für Weisses & Rotes Blutbild nebeneinander ---
+    col1, col2 = st.columns(2)
 
-    # --- Logout button ---
+    with col1:
+        if st.button("Zum Weissen Blutbild", use_container_width=True):
+            st.switch_page("pages/1_Weisses Blutbild.py")
+
+    with col2:
+        if st.button("Zum Roten Blutbild", use_container_width=True):
+            st.switch_page("pages/2_Rotes Blutbild.py")
+
+    st.markdown("")  # Abstand
+
+    # --- Logout Button darunter ---
     if st.button("Logout", key="logout_button", use_container_width=True):
         login_manager.authenticator.logout()
         st.experimental_rerun()
@@ -65,7 +73,9 @@ if st.session_state.get("authentication_status"):
     except Exception as e:
         st.error(f"Fehler beim Laden der Nutzerdaten: {e}")
 
+# --- Nicht eingeloggt ---
 else:
     with st.container():
         st.info("Bitte melden Sie sich an oder registrieren Sie sich, um auf die Funktionen der Blood Cell Counter App zugreifen zu können.")
         login_manager.login_register()
+

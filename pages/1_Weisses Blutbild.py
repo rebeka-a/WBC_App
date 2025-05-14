@@ -43,14 +43,19 @@ if "counts" not in st.session_state:
 if "action_history" not in st.session_state:
     st.session_state["action_history"] = []
 
+if "toast_shown_100" not in st.session_state:
+    st.session_state["toast_shown_100"] = False
+if "toast_shown_200" not in st.session_state:
+    st.session_state["toast_shown_200"] = False
+if "previous_total_cells" not in st.session_state:
+    st.session_state["previous_total_cells"] = 0
+
 # --- Patientendaten ---
 st.subheader("Patientendaten 📋")
 
-# Hinweis, wenn Patientendaten fehlen
 if not (st.session_state.get("patient_id") and st.session_state.get("gender") and st.session_state.get("birth_date")):
     st.warning("Bitte neue Patientendaten eingeben.")
 
-# Eingabe der Patientendaten
 patient_id = st.text_input(
     "Patienten-ID",
     placeholder="z.B. 12345",
@@ -69,7 +74,6 @@ birth_date_input = st.text_input(
     value=st.session_state.get("birth_date", "")
 )
 
-# Geburtsdatum prüfen
 try:
     if birth_date_input:
         birth_date_value = datetime.datetime.strptime(birth_date_input, "%d.%m.%Y").date()
@@ -79,7 +83,6 @@ except ValueError:
     birth_date_value = None
     st.error("Ungültiges Datumsformat! Bitte TT.MM.JJJJ verwenden.")
 
-# Patientendaten speichern
 if patient_id:
     st.session_state["patient_id"] = patient_id
 if gender:
@@ -87,7 +90,6 @@ if gender:
 if birth_date_value:
     st.session_state["birth_date"] = birth_date_value.strftime("%d.%m.%Y")
 
-# 🔹 Patientendaten zurücksetzen
 if st.button("Patientendaten zurücksetzen", use_container_width=True):
     st.session_state.pop("patient_id", None)
     st.session_state.pop("gender", None)
@@ -95,20 +97,37 @@ if st.button("Patientendaten zurücksetzen", use_container_width=True):
     st.success("Patientendaten wurden zurückgesetzt!")
     st.rerun()
 
-# --- Zellzählung --- 
+# --- Zellzählung ---
 st.markdown("---")
 st.subheader("Zellen zählen 🔬")
 
-# Display total cell count
 total_cells = sum(st.session_state["counts"].values())
+previous_total = st.session_state["previous_total_cells"]
+st.session_state["previous_total_cells"] = total_cells
+
 st.info(f"**Gesamtanzahl der gezählten Zellen:** {total_cells}")
 
+# --- Hinweise bei 100 und 200 Zellen als Toast ---
+if total_cells >= 100 and previous_total < 100:
+    st.toast("Es wurden 100 Zellen gezählt!", icon="🔔")
+    st.session_state["toast_shown_100"] = True
+
+if total_cells >= 200 and previous_total < 200:
+    st.toast("Es wurden 200 Zellen gezählt!", icon="🔔")
+    st.session_state["toast_shown_200"] = True
+
+# Rücksetzen, wenn Rückgängig gemacht wurde
+if total_cells < 100:
+    st.session_state["toast_shown_100"] = False
+if total_cells < 200:
+    st.session_state["toast_shown_200"] = False
+
+# --- Zelltypen-Buttons ---
 wbc_types = list(st.session_state["counts"].keys())
 button_colors = ["#1f77b4", "#1f77b4", "#d62728", "#9467bd", "#2ca02c", "#ff7f0e", "#8c564b", "#e377c2"]
 
 clicked_cell = None
 
-# 3 Buttons pro Zeile
 for i in range(0, len(wbc_types), 3):
     cols = st.columns(3)
     for idx, cell in enumerate(wbc_types[i:i+3]):
@@ -116,7 +135,6 @@ for i in range(0, len(wbc_types), 3):
             if st.button(f"➕ {cell} ({st.session_state['counts'][cell]})", key=f"btn_{cell}", use_container_width=True):
                 clicked_cell = cell
 
-# Klick auswerten
 if clicked_cell:
     st.session_state["counts"][clicked_cell] += 1
     st.session_state["action_history"].append(clicked_cell)
@@ -146,6 +164,9 @@ with col_reset:
         for cell in st.session_state["counts"].keys():
             st.session_state["counts"][cell] = 0
         st.session_state["action_history"].clear()
+        st.session_state["toast_shown_100"] = False
+        st.session_state["toast_shown_200"] = False
+        st.session_state["previous_total_cells"] = 0
         st.success("Alle Zählungen wurden zurückgesetzt.")
         st.rerun()
 
@@ -173,7 +194,7 @@ ax.set_xticklabels(wbc_types, rotation=30, ha="right")
 
 if cell_counts:
     max_count = max(cell_counts)
-    ax.set_ylim(0, max(max_count * 1.2, 5))  # Immer mindestens bis 5 sichtbar
+    ax.set_ylim(0, max(max_count * 1.2, 5))
 
 for bar in bars:
     height = bar.get_height()
@@ -189,6 +210,7 @@ for bar in bars:
 
 st.pyplot(fig)
 
+# --- Navigation ---
 if st.button("Zum Roten Blutbild"):
     st.switch_page("pages/2_Rotes Blutbild.py")
 

@@ -5,6 +5,7 @@ from utils.login_manager import LoginManager
 from fpdf import FPDF
 import datetime
 import re
+import ast
 
 # Seitenkonfiguration
 st.set_page_config(page_title="Gespeicherte Ergebnisse", layout="wide")
@@ -115,8 +116,16 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
             **Geburtsdatum:** {row.get('birth_date', 'Unbekannt')} | **Alter:** {row.get('age', 'Unbekannt')}
             """)
 
-            # Zellzählung
-            counts = row.get('counts', {})
+            # Zellzählung sicher parsen
+            raw_counts = row.get('counts', {})
+            if isinstance(raw_counts, str):
+                try:
+                    counts = ast.literal_eval(raw_counts)
+                except Exception:
+                    counts = {}
+            else:
+                counts = raw_counts
+
             if isinstance(counts, dict) and any(value > 0 for value in counts.values()):
                 st.markdown("**Weisses Blutbild:**")
                 for zelltyp, anzahl in counts.items():
@@ -125,8 +134,16 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
             else:
                 st.info("Keine Zellzählung gespeichert.")
 
-            # Morphologie
-            morpho = row.get('morphology_results', {})
+            # Morphologische Beurteilung sicher parsen
+            raw_morpho = row.get('morphology_results', {})
+            if isinstance(raw_morpho, str):
+                try:
+                    morpho = ast.literal_eval(raw_morpho)
+                except Exception:
+                    morpho = {}
+            else:
+                morpho = raw_morpho
+
             auffaelligkeiten = {k: v for k, v in morpho.items() if v != "Keine"} if isinstance(morpho, dict) else {}
 
             if auffaelligkeiten:
@@ -136,14 +153,15 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
             else:
                 st.info("Keine morphologischen Auffälligkeiten gespeichert.")
 
-            # Kommentar
-            comment = row.get('comment', '')
-            if comment.strip():
+            # Kommentar sicher parsen
+            raw_comment = row.get('comment', '')
+            comment = str(raw_comment).strip() if not pd.isna(raw_comment) else ''
+            if comment:
                 st.markdown(f"**Kommentar:** {comment}")
             else:
                 st.info("Kein Kommentar vorhanden.")
 
-            # PDF-Export vorbereiten
+            # PDF erzeugen
             pdf = FPDF()
             pdf.add_page()
             pdf.set_font("Arial", "B", 10)
@@ -153,6 +171,7 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
             pdf.multi_cell(0, 6, f"Patienten-ID: {row.get('patient_id', '')} | Geschlecht: {row.get('gender', '')} | Geburtsdatum: {row.get('birth_date', '')} | Alter: {row.get('age', '')} Jahre")
             pdf.cell(0, 6, f"Zeitpunkt: {timestamp_str}", ln=True)
             pdf.ln(2)
+
             pdf.set_font("Arial", "B", 8)
             pdf.cell(60, 6, "Zelltyp", border=1)
             pdf.cell(30, 6, "Anzahl", border=1)
@@ -184,27 +203,30 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
             pdf.set_font("Arial", "", 8)
             pdf.multi_cell(0, 6, comment)
 
+            # PDF als Bytes exportieren
             pdf_bytes = pdf.output(dest='S').encode('latin-1', 'replace')
-            safe_patient_id = re.sub(r'[^a-zA-Z0-9_-]', '_', row.get('patient_id', 'unbekannt'))
+
+            # Dateiname sicher erzeugen
+            raw_id = row.get('patient_id', 'unbekannt')
+            safe_patient_id = re.sub(r'[^a-zA-Z0-9_-]', '_', str(raw_id))
             safe_timestamp = timestamp_str.replace(':', '-').replace(' ', '_')
             file_name = f"Zellzählung_{safe_patient_id}_{safe_timestamp}.pdf"
 
-            # Zwei gleich breite Buttons über die volle Seitenbreite
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.download_button(
-                    label="📄 PDF herunterladen",
-                    data=pdf_bytes,
-                    file_name=file_name,
-                    mime="application/pdf",
-                    use_container_width=True
-                )
-
-            with col2:
-                if st.button("🗑️ Eintrag löschen", key=f"delete_{idx}"):
-                    delete_entry(row.get('timestamp'))
-                    st.rerun()
+            # Zwei gleich breite Buttons nebeneinander – volle Breite
+            with st.container():
+                col1, col2 = st.columns([0.5, 0.5])
+                with col1:
+                    st.download_button(
+                        label="📄 PDF herunterladen",
+                        data=pdf_bytes,
+                        file_name=file_name,
+                        mime="application/pdf",
+                        use_container_width=True
+                    )
+                with col2:
+                    if st.button("🗑️ Eintrag löschen", key=f"delete_{idx}", use_container_width=True):
+                        delete_entry(row.get('timestamp'))
+                        st.rerun()
 
 else:
     st.info("Es sind noch keine Ergebnisse gespeichert.")
