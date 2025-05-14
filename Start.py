@@ -48,11 +48,11 @@ if st.session_state.get("authentication_status"):
 
     with col1:
         if st.button("Zum Weissen Blutbild", use_container_width=True):
-            st.switch_page("pages/1_Weisses Blutbild.py")
+            st.switch_page("Weisses Blutbild")  # ✅ korrekter Sidebar-Titel
 
     with col2:
         if st.button("Zum Roten Blutbild", use_container_width=True):
-            st.switch_page("pages/2_Rotes Blutbild.py")
+            st.switch_page("Rotes Blutbild")  # ✅ korrekter Sidebar-Titel
 
     st.markdown("")  # Abstand
 
@@ -78,4 +78,3 @@ else:
     with st.container():
         st.info("Bitte melden Sie sich an oder registrieren Sie sich, um auf die Funktionen der Blood Cell Counter App zugreifen zu können.")
         login_manager.login_register()
-
