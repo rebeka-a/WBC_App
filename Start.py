@@ -59,7 +59,7 @@ if st.session_state.get("authentication_status"):
     # --- Logout Button darunter ---
     if st.button("Logout", key="logout_button", use_container_width=True):
         login_manager.authenticator.logout()
-        st.experimental_rerun()
+        st.rerun()  # ✅ KORRIGIERT
 
     # --- Daten laden nach Login ---
     try:
