@@ -86,7 +86,6 @@ class DataManager:
             ValueError: If an unsupported protocol is specified
         """
         if protocol == 'webdav':
-            st.write("Lade secrets.toml:", st.secrets)  # Debugging-Ausgabe
             try:
                 secrets = st.secrets['webdav']
                 return fsspec.filesystem(
