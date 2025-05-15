@@ -25,48 +25,47 @@ if "data_df" not in st.session_state:
         initial_value=pd.DataFrame(columns=["timestamp", "patient_id", "counts", "gender", "birth_date"])
     )
 
-# --- Session States initialisieren ---
-if "counts" not in st.session_state:
-    st.session_state["counts"] = {
-        "Segmentkernige Neutrophile": 0,
-        "Stabkernige Neutrophile": 0,
-        "Eosinophile": 0,
-        "Basophile": 0,
-        "Monozyten": 0,
-        "Lymphozyten": 0,
-        "Plasmazellen": 0,
-        "Vorstufen": 0
-    }
+# --- Session-State-Initialisierung ---
+st.session_state.setdefault("counts", {
+    "Segmentkernige Neutrophile": 0,
+    "Stabkernige Neutrophile": 0,
+    "Eosinophile": 0,
+    "Basophile": 0,
+    "Monozyten": 0,
+    "Lymphozyten": 0,
+    "Plasmazellen": 0,
+    "Vorstufen": 0
+})
+st.session_state.setdefault("action_history", [])
+st.session_state.setdefault("previous_total_cells", 0)
+st.session_state.setdefault("toast_shown_100", False)  # Toast für 100 Zellen
+st.session_state.setdefault("toast_shown_200", False)  # Toast für 200 Zellen
 
-if "action_history" not in st.session_state:
-    st.session_state["action_history"] = []
+# --- Funktionen ---
+def reset_patient_data():
+    """Setzt die Patientendaten zurück."""
+    for key in ["patient_id", "gender", "birth_date"]:
+        st.session_state.pop(key, None)
+    st.success("Patientendaten wurden zurückgesetzt!")
+    st.rerun()
 
-if "toast_shown_100" not in st.session_state:
-    st.session_state["toast_shown_100"] = False
-if "toast_shown_200" not in st.session_state:
-    st.session_state["toast_shown_200"] = False
-if "previous_total_cells" not in st.session_state:
+def reset_cell_counts():
+    """Setzt die Zellzählung zurück."""
+    for cell in st.session_state["counts"]:
+        st.session_state["counts"][cell] = 0
+    st.session_state["action_history"].clear()
     st.session_state["previous_total_cells"] = 0
+    st.session_state["toast_shown_100"] = False
+    st.session_state["toast_shown_200"] = False
+    st.success("Alle Zählungen wurden zurückgesetzt.")
+    st.rerun()
 
 # --- Patientendaten ---
 st.subheader("Patientendaten 📋")
 
-if not (st.session_state.get("patient_id") and st.session_state.get("gender") and st.session_state.get("birth_date")):
-    st.warning("Bitte neue Patientendaten eingeben.")
-
 patient_id = st.text_input("Patienten-ID", placeholder="z.B. 12345", value=st.session_state.get("patient_id", ""))
-
-gender = st.selectbox(
-    "Geschlecht",
-    ["", "Männlich", "Weiblich"],
-    index=["", "Männlich", "Weiblich"].index(st.session_state.get("gender", "")) if "gender" in st.session_state else 0
-)
-
-birth_date_input = st.text_input(
-    "Geburtsdatum (TT.MM.JJJJ)",
-    placeholder="z.B. 01.01.2000",
-    value=st.session_state.get("birth_date", "")
-)
+gender = st.selectbox("Geschlecht", ["", "Männlich", "Weiblich"], index=["", "Männlich", "Weiblich"].index(st.session_state.get("gender", "")) if "gender" in st.session_state else 0)
+birth_date_input = st.text_input("Geburtsdatum (TT.MM.JJJJ)", placeholder="z.B. 01.01.2000", value=st.session_state.get("birth_date", ""))
 
 try:
     birth_date_value = datetime.datetime.strptime(birth_date_input, "%d.%m.%Y").date() if birth_date_input else None
@@ -82,11 +81,7 @@ if birth_date_value:
     st.session_state["birth_date"] = birth_date_value.strftime("%d.%m.%Y")
 
 if st.button("Patientendaten zurücksetzen", use_container_width=True):
-    st.session_state.pop("patient_id", None)
-    st.session_state.pop("gender", None)
-    st.session_state.pop("birth_date", None)
-    st.success("Patientendaten wurden zurückgesetzt!")
-    st.rerun()
+    reset_patient_data()
 
 # --- Zellzählung ---
 st.markdown("---")
@@ -99,11 +94,11 @@ st.session_state["previous_total_cells"] = total_cells
 st.info(f"**Gesamtanzahl der gezählten Zellen:** {total_cells}")
 
 # --- Hinweise bei 100 und 200 Zellen als Toast ---
-if total_cells >= 100 and previous_total < 100:
+if total_cells >= 100 and not st.session_state["toast_shown_100"]:
     st.toast("Es wurden 100 Zellen gezählt!", icon="🔔")
     st.session_state["toast_shown_100"] = True
 
-if total_cells >= 200 and previous_total < 200:
+if total_cells >= 200 and not st.session_state["toast_shown_200"]:
     st.toast("Es wurden 200 Zellen gezählt!", icon="🔔")
     st.session_state["toast_shown_200"] = True
 
@@ -151,14 +146,7 @@ with col_undo:
 
 with col_reset:
     if st.button("Zellzählung zurücksetzen", key="reset_button", use_container_width=True):
-        for cell in st.session_state["counts"].keys():
-            st.session_state["counts"][cell] = 0
-        st.session_state["action_history"].clear()
-        st.session_state["toast_shown_100"] = False
-        st.session_state["toast_shown_200"] = False
-        st.session_state["previous_total_cells"] = 0
-        st.success("Alle Zählungen wurden zurückgesetzt.")
-        st.rerun()
+        reset_cell_counts()
 
 # --- Zellverteilung Diagramm ---
 st.markdown("---")

@@ -1,0 +1,46 @@
+# Nutzertest mit App
+
+## Blod Cell Counter App
+
+### Hypothese 
+#### Was wissen wir?
+- Unsere Zielgruppe sind Studierende der Labordiagnostik, die sich im Rahmen von Praktika mit der Differenzierung von Blutzellen beschäftigen.
+- Die App soll den Lernprozess im Praktikum unterstützen und die Auswertung sowie Analyse von Blutbildern vereinfachen.
+- Die Nutzer:innen verfügen über medizinisches Grundwissen, befinden sich aber noch in der Ausbildung.
+
+#### Was wissen wir nicht?
+- Ob der Aufbau und die Funktionen der App für Studierende ohne zusätzliche Erklärungen selbsterklärend und logisch sind.
+- Ob die Gestaltung verständlich und hilfreich ist.
+- Ob fehlende Funktionen den Lernprozess behindern.
+- Ob die App als Lernhilfe und Unterstützung im Praktikum wahrgenommen wird.
+
+#### Hypothese (für den Usability-Test):
+Studierende sollen in der Lage sein die App wärend des Praktikums zu nutzen um erfolgreich Zellen zählen zu können und Blutbilder zu evaluieren. Im gegensatz zu herkömmlichen Apps können Daten gespeichert werden und wieder aufgerufen werden beim lernen auf die Präfungen.
+
+#### Was möchten wir testen?
+- Wird die App-Oberfläche als verständlich und logisch empfunden?
+- Können Studierende die Funktionen ohne Anleitung richtig verwenden?
+- Welche Elemente unterstützen den Lernprozess gut – und welche verwirren oder fehlen?
+- Wie hilfreich wird die App im Vergleich zu traditionellen Methoden (z. B. Papierformulare) eingeschätzt?
+
+#### Was ist ein Erfolg?
+- Die Testperson findet sich ohne Anleitung schnell zurecht.
+- Die wichtigsten Funktionen werden korrekt genutzt.
+- Die App wird als lernförderlich, übersichtlich und nützlich für das Praktikum wahrgenommen.
+- Es gibt konstruktives Feedback, das uns zeigt, wo wir gezielt verbessern können.
+
+### Protokoll Nutzertest
+
+
+### Was war gut?
+
+
+### Was war schlecht?
+
+
+### Verbesserungs Vorschläge?
+Nutzer empfiehlt «Rückgängig-Button» um letzte Handlung rückgängig zu machen statt unseren +/– Knöpfen unter Zellen im Weissen Blutbild, dies sei intuitiver und würde Platz sparen.
+
+### Neue Probleme?
+Keine
+
