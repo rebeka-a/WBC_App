@@ -28,10 +28,10 @@ encoded_logo = logo_to_base64(logo)
 st.markdown(
     f"""
     <div style="display: flex; align-items: flex-start; justify-content: flex-start;
-                margin-bottom: 1rem;">
+                margin-bottom: 2rem;">
         <img src="data:image/png;base64,{encoded_logo}" 
              alt="Logo" 
-             style="width: 40vw; max-width: 220px; min-width: 100px; height: auto;" />
+             style="width: 100vw; max-width: 220px; min-width: 100px; height: auto;" />
     </div>
     """,
     unsafe_allow_html=True
