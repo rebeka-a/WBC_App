@@ -9,6 +9,10 @@ from io import BytesIO
 
 # --- Seitenkonfiguration ---
 st.set_page_config(page_title="Startseite", layout="wide")
+import streamlit as st
+from PIL import Image
+import base64
+from io import BytesIO
 
 # Hilfsfunktion: Bild in base64 umwandeln
 def logo_to_base64(image):
@@ -16,9 +20,22 @@ def logo_to_base64(image):
     image.save(buffer, format="PNG")
     return base64.b64encode(buffer.getvalue()).decode()
 
-# Logo laden und als HTML anzeigen (links oben, größer)
+# Logo laden
 logo = Image.open("images/logo.png")
 encoded_logo = logo_to_base64(logo)
+
+# Logo oben links anzeigen
+st.markdown(
+    f"""
+    <div style="display: flex; align-items: flex-start; justify-content: flex-start;
+                margin-bottom: 1rem;">
+        <img src="data:image/png;base64,{encoded_logo}" 
+             alt="Logo" 
+             style="width: 25vw; max-width: 160px; min-width: 20px; height: auto;" />
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # --- DataManager und LoginManager initialisieren ---
 data_manager = DataManager(fs_protocol='webdav', fs_root_folder="WBC_Data")
