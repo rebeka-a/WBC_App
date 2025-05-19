@@ -4,27 +4,15 @@ import base64
 from io import BytesIO
 
 def show_logo(path="images/logo.png"):
-    def logo_to_base64(image):
+    def logo_to_base64(img):
         buffer = BytesIO()
-        image.save(buffer, format="PNG")
+        img.save(buffer, format="PNG")
         return base64.b64encode(buffer.getvalue()).decode()
 
     logo = Image.open(path)
     encoded_logo = logo_to_base64(logo)
 
     st.markdown(
-        f"""
-        <div style="position: relative; padding-left: 0rem; padding-top: 0.5rem; margin-bottom: 1rem;">
-            <img src="data:image/png;base64,{encoded_logo}"
-                 style="
-                     display: block;
-                     height: auto;
-                     width: 120px;
-                     max-width: 100%;
-                     min-width: 80px;
-                 "
-                 alt="Logo" />
-        </div>
-        """,
+        f'<img src="data:image/png;base64,{encoded_logo}" width="140">',
         unsafe_allow_html=True
     )

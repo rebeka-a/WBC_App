@@ -19,7 +19,7 @@ show_logo()
 # --- Zugriffsschutz ---
 data_manager = DataManager(fs_protocol="webdav", fs_root_folder="WBC_Data")
 login_manager = LoginManager(data_manager)
-login_manager.go_to_login("Start.py")  # ← Exakter Titel deiner Startseite in der Sidebar
+login_manager.go_to_login("Start.py")
 
 # --- Hauptbereich ---
 st.title("Weisses Blutbild")
