@@ -25,7 +25,7 @@ st.markdown(
     <style>
         @media (max-width: 768px) {{
             .logo-img {{
-                width: 100px !important;
+                width: 50px !important;
                 height: auto !important;
                 margin: auto;
                 display: block;
