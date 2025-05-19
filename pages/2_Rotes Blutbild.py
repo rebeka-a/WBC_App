@@ -11,9 +11,6 @@ from configuration.logo_code import show_logo
 # App Setup
 st.set_page_config(page_title="Morphologische Beurteilung", layout="wide")
 
-# --- Logo anzeigen ---
-show_logo()
-
 # --- DataManager und LoginManager initialisieren ---
 data_manager = DataManager()
 login_manager = LoginManager(data_manager)

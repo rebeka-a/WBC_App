@@ -13,9 +13,6 @@ from configuration.logo_code import show_logo
 # --- Seitenkonfiguration ---
 st.set_page_config(page_title="Weisses Blutbild", layout="wide")
 
-# --- Logo anzeigen ---
-show_logo()
-
 # --- Zugriffsschutz ---
 data_manager = DataManager(fs_protocol="webdav", fs_root_folder="WBC_Data")
 login_manager = LoginManager(data_manager)

@@ -16,9 +16,6 @@ from configuration.logo_code import show_logo
 # Seitenkonfiguration
 st.set_page_config(page_title="Datenübersicht", layout="wide")
 
-# --- Logo anzeigen ---
-show_logo()
-
 # Zugriffsschutz
 LoginManager().go_to_login('Start.py')
 
