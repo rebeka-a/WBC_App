@@ -16,46 +16,36 @@ def logo_to_base64(image):
     image.save(buffer, format="PNG")
     return base64.b64encode(buffer.getvalue()).decode()
 
-# Logo laden und als HTML anzeigen (links oben, größer)
+# Logo laden und als HTML anzeigen (responsiv)
 logo = Image.open("images/logo.png")
 encoded_logo = logo_to_base64(logo)
 
 st.markdown(
     f"""
     <style>
-        .logo-container {{
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            margin-top: 0;
-            margin-bottom: 1rem;
-        }}
-
-        .logo-container img {{
-            width: 20vw;
-            min-width: 80px;
-            max-width: 160px;
-            height: auto;
-        }}
-
         @media (max-width: 768px) {{
-            .logo-container {{
-                justify-content: center;
+            .logo-img {{
+                width: 100px !important;
+                height: auto !important;
+                margin: auto;
+                display: block;
             }}
+        }}
 
-            .logo-container img {{
-                width: 30vw;
-                max-width: 120px;
+        @media (min-width: 769px) {{
+            .logo-img {{
+                width: 160px !important;
+                height: auto !important;
+                margin-left: 0px;
             }}
         }}
     </style>
 
-    <div class="logo-container">
-        <img src="data:image/png;base64,{encoded_logo}" alt="Logo" />
-    </div>
+    <img class="logo-img" src="data:image/png;base64,{encoded_logo}" alt="Logo" />
     """,
     unsafe_allow_html=True
 )
+
 # --- DataManager und LoginManager initialisieren ---
 data_manager = DataManager(fs_protocol='webdav', fs_root_folder="WBC_Data")
 login_manager = LoginManager(data_manager)
