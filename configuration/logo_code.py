@@ -16,10 +16,16 @@ def show_logo(path="images/logo.png"):
 
     st.markdown(
         f"""
-        <div style="display: flex; justify-content: flex-start; align-items: flex-start; margin-bottom: 1rem;">
-            <img src="data:image/png;base64,{encoded_logo}" 
-                 alt="Logo" 
-                 style="width: 140px; height: auto; max-width: 100%;" />
+        <div style="
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-start;
+            margin-bottom: 1rem;
+            padding-left: 0rem;
+        ">
+            <img src="data:image/png;base64,{encoded_logo}"
+                 style="width: 140px; max-width: 100%; height: auto;"
+                 alt="Logo" />
         </div>
         """,
         unsafe_allow_html=True
