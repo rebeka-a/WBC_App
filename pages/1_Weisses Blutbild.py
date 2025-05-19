@@ -24,11 +24,39 @@ encoded_logo = logo_to_base64(logo)
 
 st.markdown(
     f"""
-    <div style="display: flex; align-items: center; margin-top: 0px; margin-bottom: 2rem;">
-        <img src="data:image/png;base64,{encoded_logo}" style="height: 70px; margin-left: 0px;" />
+    <style>
+        .logo-wrapper {{
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }}
+
+        .logo-wrapper img {{
+            width: 160px;
+            height: auto;
+            max-width: 100%;
+        }}
+
+        @media (max-width: 768px) {{
+            .logo-wrapper {{
+                justify-content: center;
+            }}
+
+            .logo-wrapper img {{
+                width: 100px;
+            }}
+        }}
+    </style>
+
+    <div class="logo-wrapper">
+        <img src="data:image/png;base64,{encoded_logo}" alt="Bloodcell Counter Logo" />
     </div>
     """,
-    unsafe_allow_html=True)
+    unsafe_allow_html=True
+)
+
 
 # --- Zugriffsschutz ---
 data_manager = DataManager(fs_protocol="webdav", fs_root_folder="WBC_Data")
