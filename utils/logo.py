@@ -1,5 +1,3 @@
-# utils/logo.py
-
 import streamlit as st
 from PIL import Image
 import base64
@@ -16,10 +14,21 @@ def show_logo(path="images/logo.png"):
 
     st.markdown(
         f"""
+        <style>
+            /* Logo auf mobilen Geräten kleiner darstellen */
+            @media (max-width: 768px) {{
+                .logo-img {{
+                    width: 100px !important;
+                    height: auto !important;
+                }}
+            }}
+        </style>
+
         <div style="display: flex; align-items: flex-start; justify-content: flex-start;
                     margin-bottom: 1rem;">
             <img src="data:image/png;base64,{encoded_logo}" 
                  alt="Logo" 
+                 class="logo-img"
                  style="width: 25vw; max-width: 160px; min-width: 80px; height: auto;" />
         </div>
         """,
