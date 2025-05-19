@@ -31,7 +31,7 @@ st.markdown(
                 margin-bottom: 1rem;">
         <img src="data:image/png;base64,{encoded_logo}" 
              alt="Logo" 
-             style="width: 25vw; max-width: 200px; min-width: 60px; height: auto;" />
+             style="width: 40vw; max-width: 220px; min-width: 100px; height: auto;" />
     </div>
     """,
     unsafe_allow_html=True
