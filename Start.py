@@ -9,10 +9,6 @@ from io import BytesIO
 
 # --- Seitenkonfiguration ---
 st.set_page_config(page_title="Startseite", layout="wide")
-import streamlit as st
-from PIL import Image
-import base64
-from io import BytesIO
 
 # Hilfsfunktion: Bild in base64 umwandeln
 def logo_to_base64(image):
@@ -31,7 +27,7 @@ st.markdown(
                 margin-bottom: 2rem;">
         <img src="data:image/png;base64,{encoded_logo}" 
              alt="Logo" 
-             style="width: 100vw; max-width: 220px; min-width: 100px; height: auto;" />
+             style="width: 80vw; max-width: 180px; min-width: 150px; height: auto;" />
     </div>
     """,
     unsafe_allow_html=True

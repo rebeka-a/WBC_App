@@ -19,17 +19,22 @@ def logo_to_base64(image):
     image.save(buffer, format="PNG")
     return base64.b64encode(buffer.getvalue()).decode()
 
-# Logo laden und als HTML anzeigen (links oben, größer)
+# Logo laden
 logo = Image.open("images/logo.png")
 encoded_logo = logo_to_base64(logo)
 
+# Logo oben links anzeigen
 st.markdown(
     f"""
-    <div style="display: flex; align-items: center; margin-top: 0px; margin-bottom: 2rem;">
-        <img src="data:image/png;base64,{encoded_logo}" style="height: 70px; margin-left: 0px;" />
+    <div style="display: flex; align-items: flex-start; justify-content: flex-start;
+                margin-bottom: 2rem;">
+        <img src="data:image/png;base64,{encoded_logo}" 
+             alt="Logo" 
+             style="width: 80vw; max-width: 180px; min-width: 150px; height: auto;" />
     </div>
     """,
-    unsafe_allow_html=True)
+    unsafe_allow_html=True
+)
 
 # Zugriffsschutz
 LoginManager().go_to_login('Start.py')
