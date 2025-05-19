@@ -22,13 +22,26 @@ encoded_logo = logo_to_base64(logo)
 
 st.markdown(
     f"""
+    <style>
+        .responsive-logo {{
+            height: 100px;
+            margin-left: 0px;
+            max-width: 100%;
+        }}
+
+        @media (max-width: 768px) {{
+            .responsive-logo {{
+                height: 70px;
+            }}
+        }}
+    </style>
+
     <div style="display: flex; align-items: center; margin-top: 0px; margin-bottom: 2rem;">
-        <img src="data:image/png;base64,{encoded_logo}" style="height: 100px; margin-left: 0px;" />
+        <img src="data:image/png;base64,{encoded_logo}" class="responsive-logo" />
     </div>
     """,
     unsafe_allow_html=True
 )
-
 # --- DataManager und LoginManager initialisieren ---
 data_manager = DataManager(fs_protocol='webdav', fs_root_folder="WBC_Data")
 login_manager = LoginManager(data_manager)
