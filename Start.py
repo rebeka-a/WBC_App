@@ -3,25 +3,43 @@ import pandas as pd
 import datetime
 from utils.data_manager import DataManager
 from utils.login_manager import LoginManager
+from PIL import Image
+import base64
+from io import BytesIO
 
 # --- Seitenkonfiguration ---
 st.set_page_config(page_title="Startseite", layout="wide")
+
+# Hilfsfunktion: Bild in base64 umwandeln
+def logo_to_base64(image):
+    buffer = BytesIO()
+    image.save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode()
+
+# Logo laden und als HTML anzeigen (links oben, größer)
+logo = Image.open("images/logo.png")
+encoded_logo = logo_to_base64(logo)
+
+st.markdown(
+    f"""
+    <div style="display: flex; align-items: center; margin-top: -100px; margin-bottom: 1rem;">
+        <img src="data:image/png;base64,{encoded_logo}" style="height: 200px; margin-left: -30px;" />
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # --- DataManager und LoginManager initialisieren ---
 data_manager = DataManager(fs_protocol='webdav', fs_root_folder="WBC_Data")
 login_manager = LoginManager(data_manager)
 
-# --- Hauptbereich ---
-st.title("Blood Cell Counter 🧮")
-
 # --- Einführung ---
-st.markdown("""
-Willkommen zur **Blood Cell Counter App**.
+st.markdown("""Willkommen zur **Blood Cell Counter App**.
 
 Diese Anwendung wurde speziell entwickelt, Studierende und Laborfachpersonal im Bereich der Hämatologie bei der umfassenden Analyse von Blutproben effizient und zuverlässig zu unterstützen. Der Fokus liegt auf der Erfassung und Auswertung der weißen und roten Blutzellen sowie auf der strukturierten Dokumentation morphologischer Zellveränderungen. Durch den integrierten Vergleich der Ergebnisse mit Referenzbereichen können Diagnoseprozesse wesentlich beschleunigt und qualitativ verbessert werden.
 
 **Funktionsübersicht:**
-
+            
 🩸 Strukturierte und benutzerfreundliche Erfassung sowie manuelle Zählung weißer und roter Blutzellen  
 🩸 Systematische Dokumentation und Bewertung von morphologischen Veränderungen in Blutausstrichen  
 🩸 Alters- und geschlechtsspezifische Referenzbereiche zur präzisen Beurteilung der erfassten Zellpopulationen  
@@ -29,8 +47,9 @@ Diese Anwendung wurde speziell entwickelt, Studierende und Laborfachpersonal im 
 🩸 Übersichtliche Darstellung aller erfassten Befunde sowie die Möglichkeit des Exports zur weiteren Analyse oder Archivierung  
 
 **Wichtige Hinweise:**  
-🩸 Um die vollständige Funktionalität der Blood Cell Counter App nutzen zu können, ist eine Anmeldung erforderlich. Neue Nutzer haben die Möglichkeit, ein Benutzerkonto direkt innerhalb der Anwendung zu erstellen.  
-🩸 Alle eingegebenen Informationen werden ausschließlich lokal oder innerhalb eines sicheren, geschützten Servers verarbeitet und gespeichert.  
+            
+🩸 Um die vollständige Funktionalität der Blood Cell Counter App nutzen zu können, ist eine Anmeldung erforderlich.  
+🩸 Alle eingegebenen Informationen werden lokal oder innerhalb eines sicheren Servers verarbeitet und gespeichert.  
 
 ---
 """)

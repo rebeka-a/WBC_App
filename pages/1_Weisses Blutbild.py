@@ -5,9 +5,30 @@ import numpy as np
 import datetime
 from utils.data_manager import DataManager
 from utils.login_manager import LoginManager
+from PIL import Image
+import base64
+from io import BytesIO
 
 # --- Seitenkonfiguration ---
 st.set_page_config(page_title="Weisses Blutbild", layout="wide")
+
+# Hilfsfunktion: Bild in base64 umwandeln
+def logo_to_base64(image):
+    buffer = BytesIO()
+    image.save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode()
+
+# Logo laden und als HTML anzeigen (links oben, größer)
+logo = Image.open("images/logo.png")
+encoded_logo = logo_to_base64(logo)
+
+st.markdown(
+    f"""
+    <div style="display: flex; align-items: center; margin-top: -70px; margin-bottom: 1rem;">
+        <img src="data:image/png;base64,{encoded_logo}" style="height: 100px; margin-left: -15px;" />
+    </div>
+    """,
+    unsafe_allow_html=True)
 
 # --- Zugriffsschutz ---
 data_manager = DataManager(fs_protocol="webdav", fs_root_folder="WBC_Data")
