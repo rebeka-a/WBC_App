@@ -23,7 +23,7 @@ encoded_logo = logo_to_base64(logo)
 st.markdown(
     f"""
     <style>
-        .logo-wrapper {{
+        .logo-container {{
             display: flex;
             align-items: center;
             justify-content: flex-start;
@@ -31,25 +31,27 @@ st.markdown(
             margin-bottom: 1rem;
         }}
 
-        .logo-wrapper img {{
-            width: 160px;
+        .logo-container img {{
+            width: 20vw;
+            min-width: 80px;
+            max-width: 160px;
             height: auto;
-            max-width: 100%;
         }}
 
         @media (max-width: 768px) {{
-            .logo-wrapper {{
+            .logo-container {{
                 justify-content: center;
             }}
 
-            .logo-wrapper img {{
-                width: 100px;
+            .logo-container img {{
+                width: 30vw;
+                max-width: 120px;
             }}
         }}
     </style>
 
-    <div class="logo-wrapper">
-        <img src="data:image/png;base64,{encoded_logo}" alt="Bloodcell Counter Logo" />
+    <div class="logo-container">
+        <img src="data:image/png;base64,{encoded_logo}" alt="Logo" />
     </div>
     """,
     unsafe_allow_html=True
