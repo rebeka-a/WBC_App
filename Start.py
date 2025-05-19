@@ -12,7 +12,7 @@ data_manager = DataManager(fs_protocol='webdav', fs_root_folder="WBC_Data")
 login_manager = LoginManager(data_manager)
 
 # --- Einführung ---
-st.title("""Willkommen zur **Blood Cell Counter App**""")
+st.title("""Willkommen auf der **Blood Cell Counter App**""")
 st.markdown("""
 
 Diese Anwendung wurde speziell entwickelt um Studierende und Laborfachpersonal im Bereich der Hämatologie bei der umfassenden Analyse von Blutproben effizient und zuverlässig zu unterstützen. Der Fokus liegt auf der Erfassung und Auswertung der weissen und roten Blutzellen sowie auf der strukturierten Dokumentation morphologischer Zellveränderungen. Durch den integrierten Vergleich der Ergebnisse mit Referenzbereichen können Diagnoseprozesse wesentlich beschleunigt und qualitativ verbessert werden.
