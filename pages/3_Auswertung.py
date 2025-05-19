@@ -27,8 +27,8 @@ encoded_logo = logo_to_base64(logo)
 
 st.markdown(
     f"""
-    <div style="display: flex; align-items: center; margin-top: -70px; margin-bottom: 1rem;">
-        <img src="data:image/png;base64,{encoded_logo}" style="height: 100px; margin-left: -15px;" />
+    <div style="display: flex; align-items: center; margin-top: -70px; margin-bottom: -2rem;">
+        <img src="data:image/png;base64,{encoded_logo}" style="height: 150px; margin-left: -40px;" />
     </div>
     """,
     unsafe_allow_html=True)
@@ -188,7 +188,7 @@ else:
 
 # Morphologische Beurteilung
 st.markdown("---")
-st.subheader("Morphologische Beurteilung")
+st.subheader("Übersicht Morphologische Beurteilung")
 
 morpho_results = st.session_state.get('morphology_results', {})
 auffaelligkeiten_df = pd.DataFrame(
@@ -208,7 +208,7 @@ else:
 
 # Kommentar
 st.markdown("---")
-st.subheader("Kommentar ✒️")
+st.subheader("Kommentar")
 
 comment = st.text_area(
     "Kommentar",
