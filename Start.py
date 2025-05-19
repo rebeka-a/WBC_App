@@ -27,8 +27,8 @@ Diese Anwendung wurde speziell entwickelt um Studierende und Laborfachpersonal i
 
 **Wichtige Hinweise:**  
             
-🩸 Um die vollständige Funktionalität der Blood Cell Counter App nutzen zu können, ist eine Anmeldung erforderlich.  
-🩸 Alle eingegebenen Informationen werden lokal oder innerhalb eines sicheren Servers verarbeitet und gespeichert.  
+🩸 Um die vollständige Funktionalität der Blood Cell Counter App nutzen zu können, ist eine Anmeldung erforderlich  
+🩸 Alle eingegebenen Informationen werden lokal oder innerhalb eines sicheren Servers verarbeitet und gespeichert  
 
 ---
 """)
