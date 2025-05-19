@@ -6,7 +6,7 @@ from utils.login_manager import LoginManager
 from PIL import Image
 import base64
 from io import BytesIO
-from utils.logo_code import show_logo
+from configuration.logo_code import show_logo
 
 # App Setup
 st.set_page_config(page_title="Morphologische Beurteilung", layout="wide")

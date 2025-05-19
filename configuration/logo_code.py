@@ -1,3 +1,5 @@
+# components/logo.py
+
 import streamlit as st
 from PIL import Image
 import base64
@@ -17,7 +19,7 @@ def show_logo(path="images/logo.png"):
         <div style="display: flex; justify-content: flex-start; align-items: flex-start; margin-bottom: 1rem;">
             <img src="data:image/png;base64,{encoded_logo}" 
                  alt="Logo" 
-                 style="height: auto; width: 140px; max-width: 100%;" />
+                 style="width: 140px; height: auto; max-width: 100%;" />
         </div>
         """,
         unsafe_allow_html=True
