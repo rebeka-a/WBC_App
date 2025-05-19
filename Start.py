@@ -11,7 +11,8 @@ from utils.logo import show_logo
 # --- Seitenkonfiguration ---
 st.set_page_config(page_title="Startseite", layout="wide")
 
-show_logo()  # 🔁 Jetzt ist es überall gleich
+# --- Logo anzeigen ---
+show_logo()
 
 # --- DataManager und LoginManager initialisieren ---
 data_manager = DataManager(fs_protocol='webdav', fs_root_folder="WBC_Data")

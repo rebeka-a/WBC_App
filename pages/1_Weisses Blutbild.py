@@ -8,32 +8,14 @@ from utils.login_manager import LoginManager
 from PIL import Image
 import base64
 from io import BytesIO
+from utils.logo import show_logo
+
 
 # --- Seitenkonfiguration ---
 st.set_page_config(page_title="Weisses Blutbild", layout="wide")
 
-# Hilfsfunktion: Bild in base64 umwandeln
-def logo_to_base64(image):
-    buffer = BytesIO()
-    image.save(buffer, format="PNG")
-    return base64.b64encode(buffer.getvalue()).decode()
-
-# Logo laden
-logo = Image.open("images/logo.png")
-encoded_logo = logo_to_base64(logo)
-
-# Logo oben links anzeigen
-st.markdown(
-    f"""
-    <div style="display: flex; align-items: flex-start; justify-content: flex-start;
-                margin-bottom: 2rem;">
-        <img src="data:image/png;base64,{encoded_logo}" 
-             alt="Logo" 
-             style="width: 80vw; max-width: 180px; min-width: 150px; height: auto;" />
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+# --- Logo anzeigen ---
+show_logo()
 
 # --- Zugriffsschutz ---
 data_manager = DataManager(fs_protocol="webdav", fs_root_folder="WBC_Data")
