@@ -19,7 +19,7 @@ Diese Anwendung wurde speziell entwickelt um Studierende und Laborfachpersonal i
 
 **Funktionsübersicht:**
             
-🩸 Strukturierte und benutzerfreundliche Erfassung sowie manuelle Zählung weißer und roter Blutzellen  
+🩸 Strukturierte und benutzerfreundliche Erfassung sowie manuelle Zählung weisser und roter Blutzellen  
 🩸 Systematische Dokumentation und Bewertung von morphologischen Veränderungen in Blutausstrichen  
 🩸 Alters- und geschlechtsspezifische Referenzbereiche zur präzisen Beurteilung der erfassten Zellpopulationen  
 🩸 Sichere Speicherung, Archivierung und Verwaltung individueller Patientendaten zur kontinuierlichen Verlaufskontrolle  
