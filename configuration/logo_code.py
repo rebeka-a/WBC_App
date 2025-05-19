@@ -14,13 +14,14 @@ def show_logo(path="images/logo.png"):
 
     st.markdown(
         f"""
-        <div style="position: relative; margin-top: 0; margin-bottom: 1rem;">
+        <div style="position: relative; padding-left: 0rem; padding-top: 0.5rem; margin-bottom: 1rem;">
             <img src="data:image/png;base64,{encoded_logo}"
                  style="
                      display: block;
-                     width: 140px;
                      height: auto;
+                     width: 120px;
                      max-width: 100%;
+                     min-width: 80px;
                  "
                  alt="Logo" />
         </div>
