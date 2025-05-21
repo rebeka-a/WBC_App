@@ -19,7 +19,7 @@ st.title("Alle gespeicherten Ergebnisse")
 
 # DataManager initialisieren
 data_manager = DataManager()
-st.sidebar.image("C:.\images\logo-bloodcell-counter.png.jpg", use_container_width=True)
+st.sidebar.image(".\images\logo-bloodcell-counter.png.jpg", use_container_width=True)
 
 # Daten laden
 if "data_df" not in st.session_state:

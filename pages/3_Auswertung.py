@@ -21,6 +21,7 @@ st.title("Datenübersicht")
 
 # DataManager initialisieren
 data_manager = DataManager()
+st.sidebar.image(".\images\logo-bloodcell-counter.png.jpg", use_container_width=True)
 
 # Daten beim Start laden
 if "data_df" not in st.session_state:
@@ -30,7 +31,7 @@ if "data_df" not in st.session_state:
 patient_id = st.session_state.get("patient_id", "")
 gender = st.session_state.get("gender", "Nicht angegeben")
 birth_date_str = st.session_state.get("birth_date", "")
-st.sidebar.image("C:.\images\logo-bloodcell-counter.png.jpg", use_container_width=True)
+
 
 if birth_date_str:
     try:
