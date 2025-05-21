@@ -11,7 +11,7 @@ from PIL import Image
 st.set_page_config(page_title="Weisses Blutbild", layout="wide")
 
 # Sidebar Logo
-st.sidebar.image("images/logo-bloodcell-counter.png", use_container_width=True)
+st.sidebar.image("images/logo.png", use_container_width=True)
 
 # --- Zugriffsschutz ---
 data_manager = DataManager(fs_protocol="webdav", fs_root_folder="WBC_Data")

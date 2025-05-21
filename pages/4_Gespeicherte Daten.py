@@ -12,7 +12,7 @@ from PIL import Image
 st.set_page_config(page_title="Gespeicherte Ergebnisse", layout="wide")
 
 # Sidebar Logo
-st.sidebar.image("images/logo-bloodcell-counter.png", use_container_width=True)
+st.sidebar.image("images/logo.png", use_container_width=True)
 
 # Zugriffsschutz
 LoginManager().go_to_login('Start.py')
