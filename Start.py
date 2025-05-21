@@ -1,76 +1,32 @@
 import streamlit as st
 import pandas as pd
-import datetime
 from utils.data_manager import DataManager
 from utils.login_manager import LoginManager
 
-# --- Seitenkonfiguration ---
-st.set_page_config(page_title="Startseite", layout="wide")
 
-# --- DataManager und LoginManager initialisieren ---
-data_manager = DataManager(fs_protocol='webdav', fs_root_folder="WBC_Data")
+# Titel der App
+st.set_page_config(page_title="Blood Cell Data & Reference Values", layout="wide")
+
+st.sidebar.image("C:\Schule\Informatik\Informatik_2\WBC_App\images\logo-bloodcell-counter.png.jpg", use_column_width=True)
+
+# Initialize the data manager
+data_manager = DataManager(fs_protocol='webdav', fs_root_folder="WBC_Data")  # switch drive
+
+# Login-Logik
 login_manager = LoginManager(data_manager)
+login_manager.login_register()
 
-# --- Einführung ---
-st.title("""Willkommen auf der **Blood Cell Counter App**""")
-st.markdown("""
 
-Diese Anwendung wurde speziell entwickelt um Studierende und Laborfachpersonal im Bereich der Hämatologie bei der umfassenden Analyse von Blutproben effizient und zuverlässig zu unterstützen. Der Fokus liegt auf der Erfassung und Auswertung der weissen und roten Blutzellen sowie auf der strukturierten Dokumentation morphologischer Zellveränderungen. Durch den integrierten Vergleich der Ergebnisse mit Referenzbereichen können Diagnoseprozesse wesentlich beschleunigt und qualitativ verbessert werden.
+# Titel der App
+st.title("Blood Cell Counter")
+st.write("This app helps you to count blood cells and compare them with reference values.")
 
-**Funktionsübersicht:**
-            
-🩸 Strukturierte und benutzerfreundliche Erfassung sowie manuelle Zählung weisser und roter Blutzellen  
-🩸 Systematische Dokumentation und Bewertung von morphologischen Veränderungen in Blutausstrichen  
-🩸 Alters- und geschlechtsspezifische Referenzbereiche zur präzisen Beurteilung der erfassten Zellpopulationen  
-🩸 Sichere Speicherung, Archivierung und Verwaltung individueller Patientendaten zur kontinuierlichen Verlaufskontrolle  
-🩸 Übersichtliche Darstellung aller erfassten Befunde sowie die Möglichkeit des Exports zur weiteren Analyse oder Archivierung  
+# Load the data from the persistent storage into the session state
+data_manager.load_user_data(
+    session_state_key='data_df', 
+    file_name='data.csv', 
+    initial_value=pd.DataFrame(columns=["timestamp", "counts", "gender", "birth_date"]),  # Initialisiere mit Standardspalten
+    parse_dates=['timestamp']
+)
 
-**Wichtige Hinweise:**  
-            
-🩸 Um die vollständige Funktionalität der Blood Cell Counter App nutzen zu können, ist eine Anmeldung erforderlich  
-🩸 Alle eingegebenen Informationen werden lokal oder innerhalb eines sicheren Servers verarbeitet und gespeichert  
-
----
-""")
-
-# --- Anmeldung / Benutzerbereich ---
-if st.session_state.get("authentication_status"):
-    user = st.session_state.get("username", "Unbekannter Benutzer")
-
-    with st.container():
-        st.success(f"Angemeldet als: **{user}**")
-
-    # --- Buttons für Weisses & Rotes Blutbild nebeneinander ---
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("Zum Weissen Blutbild", use_container_width=True):
-            st.switch_page("pages/1_Weisses Blutbild.py")
-
-    with col2:
-        if st.button("Zum Roten Blutbild", use_container_width=True):
-            st.switch_page("pages/2_Rotes Blutbild.py")
-
-    st.markdown("")  # Abstand
-
-    # --- Logout Button (Standard mit Streamlit Authenticator) ---
-    login_manager.authenticator.logout("Logout", "main")
-
-    # --- Daten laden nach Login ---
-    try:
-        if "data_df" not in st.session_state:
-            with st.spinner("Lade Benutzerdaten..."):
-                data_manager.load_user_data(
-                    session_state_key='data_df',
-                    file_name='data.csv',
-                    initial_value=pd.DataFrame(columns=["timestamp", "counts", "gender", "birth_date"]),
-                    parse_dates=['timestamp']
-                )
-    except Exception as e:
-        st.error(f"Fehler beim Laden der Nutzerdaten: {e}")
-
-# --- Nicht eingeloggt ---
-else:
-    with st.container():
-        st.info("Bitte melden Sie sich an oder registrieren Sie sich, um auf die Funktionen der Blood Cell Counter App zugreifen zu können.")
-        login_manager.login_register()
+# Navigation über separate Seiten
