@@ -7,7 +7,7 @@ from utils.login_manager import LoginManager
 # Titel der App
 st.set_page_config(page_title="Blood Cell Data & Reference Values", layout="wide")
 
-st.sidebar.image("C:images\logo-bloodcell-counter.png.jpg", use_container_width=True)
+st.sidebar.image("images/logo-bloodcell-counter.png.jpg", use_column_width=True)
 
 # Initialize the data manager
 data_manager = DataManager(fs_protocol='webdav', fs_root_folder="WBC_Data")  # switch drive
@@ -69,4 +69,4 @@ if st.session_state.get("authentication_status"):
 
 
 
-# Navigation über separate Seiten    
+# Navigation über separate Seiten
