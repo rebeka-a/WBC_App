@@ -12,6 +12,8 @@ from PIL import Image
 
 # Seitenkonfiguration
 st.set_page_config(page_title="Datenübersicht", layout="wide")
+
+# Siedebar Logo 
 st.sidebar.image("images/logo-bloodcell-counter.jpg", use_container_width=True)
 
 # Zugriffsschutz

@@ -8,10 +8,12 @@ from PIL import Image
 # App Setup
 st.set_page_config(page_title="Morphologische Beurteilung", layout="wide")
 
+# Sidebar Logo 
+st.sidebar.image("images/logo-bloodcell-counter.jpg", use_container_width=True)
+
 # --- DataManager und LoginManager initialisieren ---
 data_manager = DataManager()
 login_manager = LoginManager(data_manager)
-st.sidebar.image("images/logo-bloodcell-counter.jpg", use_container_width=True)
 
 # --- Zugriffsschutz ---
 login_manager.go_to_login('Start.py')

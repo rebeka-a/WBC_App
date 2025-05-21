@@ -11,6 +11,9 @@ from PIL import Image
 # Seitenkonfiguration
 st.set_page_config(page_title="Gespeicherte Ergebnisse", layout="wide")
 
+# Sidebar Logo
+st.sidebar.image("images/logo-bloodcell-counter.jpg", use_container_width=True)
+
 # Zugriffsschutz
 LoginManager().go_to_login('Start.py')
 
@@ -19,7 +22,6 @@ st.title("Übersicht der gespeicherten Ergebnisse")
 
 # DataManager initialisieren
 data_manager = DataManager()
-st.sidebar.image("images/logo-bloodcell-counter.jpg", use_container_width=True)
 
 # Daten laden
 if "data_df" not in st.session_state:

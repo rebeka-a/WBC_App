@@ -7,13 +7,16 @@ from utils.data_manager import DataManager
 from utils.login_manager import LoginManager
 from PIL import Image
 
-# --- Seitenkonfiguration ---
+# Seitenkonfiguration 
 st.set_page_config(page_title="Weisses Blutbild", layout="wide")
+
+# Sidebar Logo
+st.sidebar.image("images/logo-bloodcell-counter.jpg", use_container_width=True)
 
 # --- Zugriffsschutz ---
 data_manager = DataManager(fs_protocol="webdav", fs_root_folder="WBC_Data")
 login_manager = LoginManager(data_manager)
-st.sidebar.image("images/logo-bloodcell-counter.jpg", use_container_width=True)
+
 
 # --- Login-Logik ---
 login_manager.go_to_login("Start.py")
