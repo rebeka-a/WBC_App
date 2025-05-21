@@ -9,7 +9,7 @@ from PIL import Image
 st.set_page_config(page_title="Morphologische Beurteilung", layout="wide")
 
 # Sidebar Logo 
-st.sidebar.image("images/logo-bloodcell-counter.jpg", use_container_width=True)
+st.sidebar.image("images/logo-bloodcell-counter.png", use_container_width=True)
 
 # --- DataManager und LoginManager initialisieren ---
 data_manager = DataManager()
