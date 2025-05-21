@@ -7,7 +7,7 @@ from utils.login_manager import LoginManager
 # Titel der App
 st.set_page_config(page_title="Blood Cell Data & Reference Values", layout="wide")
 
-st.sidebar.image("C:\Schule\Informatik\Informatik_2\WBC_App\images\logo-bloodcell-counter.png.jpg", use_container_width=True)
+st.sidebar.image("C:images\logo-bloodcell-counter.png.jpg", use_container_width=True)
 
 # Initialize the data manager
 data_manager = DataManager(fs_protocol='webdav', fs_root_folder="WBC_Data")  # switch drive
@@ -16,6 +16,12 @@ data_manager = DataManager(fs_protocol='webdav', fs_root_folder="WBC_Data")  # s
 login_manager = LoginManager(data_manager)
 login_manager.login_register()
 
+data_manager.load_user_data(
+    session_state_key='data_df', 
+    file_name='data.csv', 
+    initial_value=pd.DataFrame(),
+    parse_dates=['timestamp']
+)
 
 # Titel der App
 st.title("Blood Cell Counter 🧮")
@@ -60,12 +66,7 @@ if st.session_state.get("authentication_status"):
         st.experimental_rerun()
 
 # Load the data from the persistent storage into the session state
-data_manager.load_user_data(
-    session_state_key='data_df', 
-    file_name='data.csv', 
-    initial_value=pd.DataFrame(columns=["timestamp", "counts", "gender", "birth_date"]),
-    parse_dates=['timestamp']
-)
 
 
-# Navigation über separate Seiten
+
+# Navigation über separate Seiten    

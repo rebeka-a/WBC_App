@@ -11,6 +11,7 @@ st.set_page_config(page_title="Morphologische Beurteilung", layout="wide")
 # --- DataManager und LoginManager initialisieren ---
 data_manager = DataManager()
 login_manager = LoginManager(data_manager)
+st.sidebar.image("C:.\images\logo-bloodcell-counter.png.jpg", use_container_width=True)
 
 # --- Zugriffsschutz ---
 login_manager.go_to_login('Start.py')
