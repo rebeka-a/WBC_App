@@ -14,7 +14,7 @@ st.set_page_config(page_title="Weisses Blutbild", layout="wide")
 data_manager = DataManager(fs_protocol="webdav", fs_root_folder="WBC_Data")
 login_manager = LoginManager(data_manager)
 login_manager.go_to_login("Start.py")
-st.sidebar.image("images\logo-bloodcell-counter.png.jpg", use_container_width=True)
+st.sidebar.image("images/logo-bloodcell-counter.png.jpg", use_container_width=True)
 
 
 # --- Hauptbereich ---
