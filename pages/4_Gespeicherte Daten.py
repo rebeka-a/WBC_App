@@ -1,7 +1,12 @@
 import streamlit as st
 import pandas as pd
+from fpdf import FPDF
 from utils.data_manager import DataManager
 from utils.login_manager import LoginManager
+import datetime
+import ast
+import re
+from PIL import Image
 
 # Seitenkonfiguration
 st.set_page_config(page_title="Gespeicherte Ergebnisse", layout="wide")
@@ -16,60 +21,63 @@ st.title("Übersicht der gespeicherten Ergebnisse")
 data_manager = DataManager()
 st.sidebar.image("images/logo-bloodcell-counter.png.jpg", use_container_width=True)
 
-# Gespeicherte Daten la
-st.sidebar.image("images/logo-bloodcell-counter.png.jpg", use_container_width=True)den
+# Daten laden
 if "data_df" not in st.session_state:
     data_manager.load_app_data(session_state_key="data_df", file_name="data.csv", initial_value=[])
 
-# Hilfsfunktion: Eintrag löschen
+# Funktion zum sicheren Parsen
+def safe_eval(value, fallback):
+    if isinstance(value, str):
+        try:
+            return ast.literal_eval(value)
+        except (ValueError, SyntaxError):
+            return fallback
+    elif isinstance(value, type(fallback)):
+        return value
+    else:
+        return fallback
+
+# Funktion zum Löschen
 def delete_entry(timestamp):
-    df = st.session_state['data_df']
-    df = df[df['timestamp'] != timestamp]  # Alle behalten außer diesen
-    st.session_state['data_df'] = df
+    df = st.session_state["data_df"]
+    df = df[df["timestamp"] != timestamp]
+    st.session_state["data_df"] = df
     data_manager.save_data("data_df")
     st.success(f"Eintrag vom {timestamp} wurde gelöscht.")
 
-# Hauptbereich
-if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
+# Anzeige
+if 'data_df' in st.session_state and not st.session_state["data_df"].empty:
 
-    # Patienten-IDs für Filter
-    patient_ids = st.session_state['data_df']['patient_id'].dropna().unique()
+    patient_ids = st.session_state["data_df"]["patient_id"].dropna().unique()
     selected_patient_id = st.selectbox(
-        "🔍 Ergebnisse filtern nach Patienten-ID (optional)", 
+        "🔍 Ergebnisse filtern nach Patienten-ID (optional)",
         options=["Alle"] + list(patient_ids)
     )
 
     if selected_patient_id != "Alle":
-        filtered_df = st.session_state['data_df'][st.session_state['data_df']['patient_id'] == selected_patient_id]
+        filtered_df = st.session_state["data_df"][st.session_state["data_df"]["patient_id"] == selected_patient_id]
     else:
-        filtered_df = st.session_state['data_df']
+        filtered_df = st.session_state["data_df"]
 
-    # Kompakte Anzeige der Einträge
     for idx, row in filtered_df.iterrows():
-        # Timestamp schön formatieren
-        timestamp = pd.to_datetime(row.get('timestamp'))
+        timestamp = pd.to_datetime(row.get("timestamp"), errors="coerce")
         timestamp_str = timestamp.strftime("%Y-%m-%d %H:%M:%S") if not pd.isnull(timestamp) else "kein Datum"
+        patient_id = row.get("patient_id", "Unbekannt")
 
-        # Patienten-ID holen und behandeln
-        patient_id = row.get('patient_id')
-        if not patient_id or pd.isna(patient_id) or str(patient_id).strip() == "":
-            patient_label = "**Patienten-ID: Unbekannt**"
-        else:
-            patient_label = f"**Patienten-ID: {patient_id}**"
+        with st.expander(f"**Patienten-ID: {patient_id}** – {timestamp_str}"):
 
-        # --- Neuer Expander-Titel ---
-        with st.expander(f"{patient_label} – {timestamp_str}"):
             st.markdown(f"""
-            **Patienten-ID:** {row.get('patient_id', 'Keine ID')}  
+            **Patienten-ID:** {patient_id}  
             **Geschlecht:** {row.get('gender', 'Unbekannt')}  
             **Geburtsdatum:** {row.get('birth_date', 'Unbekannt')} | **Alter:** {row.get('age', 'Unbekannt')}
             """)
 
+            counts = safe_eval(row.get("counts", {}), {})
+            morpho = safe_eval(row.get("morphology_results", {}), {})
+            comment_raw = row.get("comment", "")
+            comment = str(comment_raw).strip() if not pd.isna(comment_raw) else ""
 
-
-            # Zellzählung kompakt darstellen
-            counts = row.get('counts', {})
-            if isinstance(counts, dict) and any(value > 0 for value in counts.values()):
+            if counts and any(v > 0 for v in counts.values()):
                 st.markdown("**Weisses Blutbild:**")
                 for zelltyp, anzahl in counts.items():
                     if anzahl > 0:
@@ -77,12 +85,7 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
             else:
                 st.info("Keine Zellzählung gespeichert.")
 
-            # Morphologische Auffälligkeiten kompakt
-            morpho = row.get('morphology_results', {})
-            if isinstance(morpho, dict):
-                auffaelligkeiten = {k: v for k, v in morpho.items() if v != "Keine"}
-            else:
-                auffaelligkeiten = {}
+            auffaelligkeiten = {k: v for k, v in morpho.items() if v != "Keine"}
 
             if auffaelligkeiten:
                 st.markdown("**Morphologische Auffälligkeiten:**")
@@ -91,25 +94,80 @@ if 'data_df' in st.session_state and not st.session_state['data_df'].empty:
             else:
                 st.info("Keine morphologischen Auffälligkeiten gespeichert.")
 
-            # Kommentar anzeigen
-            comment = row.get('comment', 'Kein Kommentar')
-            st.markdown(f"**Kommentar:** {comment}")
-            
-            # Eintrag löschen
-            if st.button(f"Diesen Eintrag löschen", key=f"delete_{idx}"):
-                delete_entry(row.get('timestamp'))
-                st.rerun()  # Seite neu laden nach Löschen
+            if comment:
+                st.markdown(f"**Kommentar:** {comment}")
+            else:
+                st.info("Kein Kommentar vorhanden.")
 
-    st.markdown("---")
+            # PDF Export
+            pdf = FPDF()
+            pdf.add_page()
+            pdf.set_font("Arial", "B", 10)
+            pdf.cell(0, 8, "Ergebnisse der Zellzählung", ln=True, align="C")
+            pdf.ln(4)
 
-    # Download-Button
-    csv = filtered_df.to_csv(index=False).encode('utf-8')
-    st.download_button(
-        label="Alle Ergebnisse als CSV herunterladen",
-        data=csv,
-        file_name='gespeicherte_ergebnisse.csv',
-        mime='text/csv'
-    )
+            pdf.set_font("Arial", "", 8)
+            pdf.multi_cell(0, 6, f"Patienten-ID: {row.get('patient_id', '')} | Geschlecht: {row.get('gender', '')} | Geburtsdatum: {row.get('birth_date', '')} | Alter: {row.get('age', '')} Jahre")
+            pdf.cell(0, 6, f"Zeitpunkt: {timestamp_str}", ln=True)
+            pdf.ln(2)
+
+            pdf.set_font("Arial", "B", 8)
+            pdf.cell(60, 6, "Zelltyp", border=1)
+            pdf.cell(30, 6, "Anzahl", border=1)
+            pdf.cell(30, 6, "Referenz", border=1, ln=True)
+            pdf.set_font("Arial", "", 8)
+
+            reference_values = {
+                "Segmentkernige Neutrophile": (40, 75),
+                "Stabkernige Neutrophile": (3, 6),
+                "Eosinophile": (1, 6),
+                "Basophile": (0, 1),
+                "Monozyten": (2, 10),
+                "Lymphozyten": (15, 45),
+                "Plasmazellen": (0, 2),
+                "Vorstufen": (0, 1)
+            }
+
+            for cell, (low, high) in reference_values.items():
+                count = counts.get(cell, 0)
+                ref = f"{low}-{high}%"
+                pdf.cell(60, 6, cell, border=1)
+                pdf.cell(30, 6, str(count), border=1)
+                pdf.cell(30, 6, ref, border=1, ln=True)
+
+            pdf.ln(3)
+            pdf.set_font("Arial", "B", 8)
+            pdf.cell(0, 6, "Morphologische Beurteilung:", ln=True)
+            pdf.ln(2)
+            pdf.cell(60, 6, "Parameter", border=1)
+            pdf.cell(30, 6, "Schweregrad", border=1, ln=True)
+            pdf.set_font("Arial", "", 8)
+            for param, severity in morpho.items():
+                pdf.cell(60, 6, param, border=1)
+                pdf.cell(30, 6, severity, border=1, ln=True)
+
+            pdf.ln(3)
+            pdf.set_font("Arial", "B", 8)
+            pdf.cell(0, 6, "Kommentar:", ln=True)
+            pdf.set_font("Arial", "", 8)
+            pdf.multi_cell(0, 6, comment)
+
+            pdf_bytes = pdf.output(dest='S').encode('latin-1', 'replace')
+
+            safe_patient_id = re.sub(r'[^a-zA-Z0-9_-]', '_', str(patient_id))
+            safe_timestamp = timestamp_str.replace(":", "-").replace(" ", "_")
+
+            st.download_button(
+                label="📄 Bericht als PDF herunterladen",
+                data=pdf_bytes,
+                file_name=f"Zellbericht_{safe_patient_id}_{safe_timestamp}.pdf",
+                mime="application/pdf",
+                use_container_width=True
+            )
+
+            if st.button(f"Diesen Eintrag löschen", key=f"delete_{idx}", use_container_width=True):
+                delete_entry(row.get("timestamp"))
+                st.rerun()
 
 else:
     st.info("Es sind noch keine Ergebnisse gespeichert.")
