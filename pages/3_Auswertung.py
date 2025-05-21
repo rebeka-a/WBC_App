@@ -22,7 +22,6 @@ st.title("Datenübersicht")
 
 # DataManager initialisieren
 data_manager = DataManager()
-st.sidebar.image("images/logo-bloodcell-counter.jpg", use_container_width=True)
 
 # Daten beim Start laden
 if "data_df" not in st.session_state:
