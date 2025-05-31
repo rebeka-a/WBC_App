@@ -134,11 +134,17 @@ if auffaelligkeiten:
 
 # Ergebnisse nur intern im Session State speichern
 st.session_state['morphology_results'] = results
+   
 
-if st.button("Zum Weissen Blutbild"):
-    st.switch_page("pages/1_Weisses Blutbild.py")
-    
-if st.button("Zur Auswertung"):
-    st.switch_page("pages/3_Auswertung.py")
+# Navigation 
+st.markdown("---")
+col_nav1, col_nav2 = st.columns(2)
 
+with col_nav1:
+    if st.button("Zum Weissen Blutbild", use_container_width=True):
+        st.switch_page("pages/1_Weisses Blutbild.pyy")
+
+with col_nav2:
+    if st.button("Zur Auswertung", use_container_width=True):
+        st.switch_page("pages/3_Auswertung.py")
 
